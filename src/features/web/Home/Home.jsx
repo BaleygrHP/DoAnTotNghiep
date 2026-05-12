@@ -1,55 +1,46 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import Slide from 'components/web/slide/Slide';
 import Loader from 'components/fullPageLoading';
-const Home = function (props) {
+import Slide from 'components/web/slide/Slide';
+import './style.css';
+
+const Home = function () {
   return (
     <>
       <Loader showLoader={false} />
       <Helmet>
         <title>Trang chủ</title>
       </Helmet>
-      <main id="main">
-        <section aria-roledescription="carousel" className="home-carousel-container content-slot">
+
+      <main id="main" className="web-page web-page--with-header web-home">
+        <section aria-roledescription="carousel" className="web-home__hero home-carousel-container content-slot">
           <div className="swiper-container swiper-container-horizontal swiper-container-autoheight swiper-container-fade">
-            <div className="swiper-wrapper" style={{ transitionDuration: '0ms' }}>
+            <div className="swiper-wrapper">
               <Slide imageUrl="/image/Homepage_Carousel_Holiday_ForHer_Desktop.jpg" title="Bag For You" />
             </div>
           </div>
         </section>
-        <div className="content-slot image-content-slot image-content-half container">
+
+        <section className="web-home__section web-container">
           <h2 className="slot-header">Cửa hàng trực tuyến</h2>
-          <div className="row">
-            <div className="image-content col-xs-6">
-              <div className="background">
-                <picture className>
-                  <img src="/image/AntigonaPouch_Browse_Men.jpg" alt="" />
-                </picture>
-              </div>
-              <a className="content promotion-impression" href="/#">
-                <div className="primary">
-                  <div className="primary">
-                    <span style={{ color: '/#FFFFFF', fontFamily: '"Roboto Condensed"', fontSize: '24px' }}>Túi xách cho em </span>
-                  </div>
+          <div className="web-home__spotlight-grid">
+            <div className="web-home__spotlight-card">
+              <img src="/image/AntigonaPouch_Browse_Men.jpg" alt="" />
+              <a className="web-home__spotlight-content promotion-impression" href="/#">
+                <div className="web-home__spotlight-copy">
+                  <span className="web-home__spotlight-title">Túi xách cho em</span>
                   <div className="cta-container">
                     <p className="form-button look-button">Mua ngay</p>
                   </div>
                 </div>
               </a>
             </div>
-            <div className="image-content col-xs-6">
-              <div className="background">
-                <picture className>
-                  <img src="/image/AntigonaPouch_Browse_Men.jpg" alt="" />
-                </picture>
-              </div>
-              <a className="content promotion-impression" href="/#">
-                <div className="primary">
-                  <div className="primary">
-                    <span style={{ color: '/#FFFFFF', fontFamily: '"Roboto Condensed"', fontSize: '24px' }}>
-                      Túi sách cho anh <br />
-                    </span>
-                  </div>
+
+            <div className="web-home__spotlight-card">
+              <img src="/image/AntigonaPouch_Browse_Men.jpg" alt="" />
+              <a className="web-home__spotlight-content promotion-impression" href="/#">
+                <div className="web-home__spotlight-copy">
+                  <span className="web-home__spotlight-title">Túi xách cho anh</span>
                   <div className="cta-container">
                     <p className="form-button look-button">Mua ngay</p>
                   </div>
@@ -57,14 +48,15 @@ const Home = function (props) {
               </a>
             </div>
           </div>
-        </div>
-        <div className="category-slot category-browse-slot container">
-          <div className="category-browse row tags-area">
-            <div className="col col-xs-6">
+        </section>
+
+        <section className="web-home__section web-container">
+          <div className="web-home__browse-grid">
+            <div className="web-home__browse-card">
               <a className="browse-header" href="/#">
-                <h2>DÀNH CHO NỮ</h2>
+                <h2>Dành cho nữ</h2>
               </a>
-              <ul>
+              <ul className="web-home__browse-links">
                 <li>
                   <a href="/#" className="tag-link">
                     New Arrivals
@@ -72,11 +64,11 @@ const Home = function (props) {
                 </li>
               </ul>
             </div>
-            <div className="col col-xs-6">
+            <div className="web-home__browse-card">
               <a className="browse-header" href="/#">
-                <h2>DÀNH CHO NAM</h2>
+                <h2>Dành cho nam</h2>
               </a>
-              <ul>
+              <ul className="web-home__browse-links">
                 <li>
                   <a href="/#" className="tag-link">
                     New Arrivals
@@ -105,65 +97,41 @@ const Home = function (props) {
               </ul>
             </div>
           </div>
-        </div>
-        <div className="category-slot container flatshot-3">
+        </section>
+
+        <section className="web-home__section web-container">
           <h2 className="slot-header">Mua ngay</h2>
-          <div className="row">
-            <div className="swiper-container">
-              <div className="swiper-wrapper">
-                <div className="grid-tile col-xs-5 col-sm-4 col-lg-4 double flatshot-3 category" aria-roledescription="slide">
-                  <a href="/#men/shoes/boots-derbies/">
-                    <span className="text">Cửa hàng Boots &amp; Derbies </span>
-                    <picture className>
-                      <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Boots & Derbies" srcSet />
-                    </picture>
-                  </a>
-                </div>
-                <div className="grid-tile col-xs-5 col-sm-4 col-lg-4 double flatshot-3 category " aria-roledescription="slide">
-                  <a href="/#men/ready-to-wear/sweatshirts/">
-                    <span className="text">Cửa hàng Sweatshirts </span>
-                    <picture className>
-                      <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Sweatshirts" />
-                    </picture>
-                  </a>
-                </div>
-                {/* category swiper-slide */}
-                <div className="grid-tile col-xs-5 col-sm-4 col-lg-4 double flatshot-3 category" aria-roledescription="slide">
-                  <a href="/#">
-                    <span className="text"> Cửa hàng Sneakers </span>
-                    <picture className>
-                      <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Sneakers" />
-                    </picture>
-                  </a>
-                </div>
-              </div>
-              {/* 					<div class="swiper-pagination"></div> */}
-            </div>
+          <div className="web-home__shop-grid">
+            <a className="web-home__shop-card" href="/#men/shoes/boots-derbies/">
+              <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Boots & Derbies" />
+              <span className="web-home__shop-title">Cửa hàng Boots &amp; Derbies</span>
+            </a>
+            <a className="web-home__shop-card" href="/#men/ready-to-wear/sweatshirts/">
+              <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Sweatshirts" />
+              <span className="web-home__shop-title">Cửa hàng Sweatshirts</span>
+            </a>
+            <a className="web-home__shop-card" href="/#">
+              <img src="/image/BH601ZH0NN001-01-01.jpg" alt="Sneakers" />
+              <span className="web-home__shop-title">Cửa hàng Sneakers</span>
+            </a>
           </div>
-        </div>
-        <div className="content-slot image-content-full-slot">
-          <div className="image-content">
-            <div className="background">
-              <picture className>
-                <img src="/image/Home-Full-Fall21-Desktop.jpg" alt="" />
-              </picture>
-            </div>
-            <div className="content">
-              <div className="primary">
-                <div className="primary">
-                  <span style={{ color: '#FFFFFF' }}>
-                    MÓN QUÀ LỚN CHO EM <br />
-                  </span>
-                </div>
+        </section>
+
+        <section className="web-home__section">
+          <div className="web-home__full-banner">
+            <img src="/image/Home-Full-Fall21-Desktop.jpg" alt="" />
+            <div className="web-home__full-banner-content">
+              <div className="web-home__full-banner-copy">
+                <span className="web-home__full-banner-title">Món quà lớn cho em</span>
                 <div className="cta-container">
-                  <a className="form-button look-button" href>
+                  <a className="form-button look-button" href="/#">
                     Khám phá ngay
                   </a>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
     </>
   );

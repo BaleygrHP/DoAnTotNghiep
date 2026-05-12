@@ -1,38 +1,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useMemo, useState } from 'react';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { categoryCDetail } from 'slice/CategoryChildSlice';
-import { getListProduct } from 'slice/ProductListSlice';
-import ProductsList from 'components/web/product/ProductsList';
-import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router';
+import { useSnackbar } from 'notistack';
+import { Helmet } from 'react-helmet';
+import Filter from 'components/web/filter';
 import Loader from 'components/fullPageLoading';
 import Modal from 'components/web/modal/modal';
-import { Helmet } from 'react-helmet';
 import Pagination from 'components/web/pagination/index';
-import Filter from 'components/web/filter';
-import { useSnackbar } from 'notistack';
-let PageSize = 8;
+import ProductsList from 'components/web/product/ProductsList';
+import { categoryCDetail } from 'slice/CategoryChildSlice';
+import { getListProduct } from 'slice/ProductListSlice';
+import './style.css';
+
+const PageSize = 8;
+
 const ShowProduct = function () {
   const {
     params: { catechildId },
   } = useRouteMatch();
   const dispatch = useDispatch();
-  // list Product
   const dataProductsList = useSelector((state) => state.productList.data);
   const dataCategoryCDetail = useSelector((state) => state.categoryChildList.categoryChildDetail);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState('');
+  const { enqueueSnackbar } = useSnackbar();
+
   const dataProduct = dataProductsList.filter((service) => service.status === true);
+
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
     return (data !== '' ? data : dataProduct).slice(firstPageIndex, lastPageIndex);
   }, [currentPage, data, dataProduct]);
-  const { enqueueSnackbar } = useSnackbar();
 
-  //useEffect
   useEffect(() => {
     (async () => {
       try {
@@ -55,46 +58,41 @@ const ShowProduct = function () {
       }
     })();
   }, [catechildId, dispatch]);
+
   useEffect(() => {
     setData(dataProduct);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataProductsList]);
 
   return (
-    <div>
+    <div className="web-guest-page web-page web-page--with-header web-product-list-page">
       <Helmet>
         <title>Sản phẩm</title>
       </Helmet>
       <Loader showLoader={loading} />
-      <main id="main" className="clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-guest-page__content clearfix">
         <div className="content-slot slot-grid-header" />
-        <div id="primary" className="primary-content">
+        <div className="primary-content">
           <div className="page-header">
             <h1>
               <span className="title">{dataCategoryCDetail.namesubCategory}</span>
             </h1>
           </div>
 
-          <div className="container">
-            <div className="category-box">
-              <div className="row-title">
-                <div className="col-md-6 col-md-4">
-                  <h1 className="title-filter">{currentTableData.length} Sản phẩm</h1>
+          <div className="web-container">
+            <div className="category-box web-guest-page__shell">
+              <div className="web-product-list-page__toolbar">
+                <h1 className="web-product-list-page__summary">{currentTableData.length} sản phẩm</h1>
+                <div className="filters-tabs">
+                  <Modal classNameModal={'btn btn-link filters-tab'} label={'Lọc'}>
+                    <Filter data={data} setData={setData} productList={dataProduct} />
+                  </Modal>
                 </div>
-                <div className="refine-buttons col-md-6 col-md-4 order-md-3">
-                  <div className="filters-tabs">
-                    <Modal classNameModal={'btn btn-link filters-tab'} label={'Lọc'}>
-                      <Filter data={data} setData={setData} productList={dataProduct} />
-                    </Modal>
-                  </div>
-                </div>
-                <div className="col-md-12 col-md-4 order-md-2"></div>
               </div>
 
-              <ul className="search-result-items tiles-container js-slv-product-grid row" data-columns>
+              <ul className="web-product-grid search-result-items tiles-container js-slv-product-grid row" data-columns>
                 <ProductsList data={currentTableData} />
               </ul>
-              <Pagination className="pagination cursor" currentPage={currentPage} totalCount={data.length} pageSize={PageSize} onPageChange={(page) => setCurrentPage(page)} />
+              <Pagination className="cursor" currentPage={currentPage} totalCount={data.length} pageSize={PageSize} onPageChange={(page) => setCurrentPage(page)} />
             </div>
           </div>
         </div>

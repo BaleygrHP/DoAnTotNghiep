@@ -1,0 +1,11 @@
+.web-product-card__link {
+  height: 100%;
+}
+
+.web-product-card__body {
+  padding: 0.5rem;
+}
+
+.web-product-card__name {
+  min-height: 2.6em;
+}

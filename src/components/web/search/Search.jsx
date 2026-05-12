@@ -1,45 +1,37 @@
-import Autocomplete from 'components/autoComplete';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import ReactGA from 'react-ga';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import Autocomplete from 'components/autoComplete';
+import './style.css';
 
 function Search(props) {
   const { data } = props;
-  console.log(data);
   const history = useHistory();
-  const handleOnClick = (data) => {
-    let queryString;
-    if (data) {
-      queryString = `?q=${data}`;
-    } else {
-      queryString = `?q=${value}`;
-    }
-    ReactGA.ga('send', 'pageview', queryString);
-    history.push(`/search${queryString}`);
-  };
   const dataProductList = useSelector((state) => state.productList.search);
   const [suggestions, setSuggestions] = useState();
   const [suggestionsActive, setSuggestionsActive] = useState(false);
   const [value, setValue] = useState('');
-  let noResult;
-  const handleClick = () => {
+
+  const handleOnClick = (keyword) => {
+    const query = keyword || value;
+    const queryString = `?q=${query}`;
+    ReactGA.ga('send', 'pageview', queryString);
+    history.push(`/search${queryString}`);
+  };
+
+  const handleResetSuggestions = () => {
     setSuggestions([]);
     setValue('');
     setSuggestionsActive(false);
   };
-  if (value !== '' && suggestions?.length === 0) {
-    noResult = true;
-  } else {
-    noResult = false;
-  }
-  function search(data) {
-    handleOnClick(data);
-  }
+
+  const noResult = value !== '' && suggestions?.length === 0;
+
   const renderPrimary = () => {
     if (noResult) {
       return (
-        <div className="search-results-container no-results">
+        <div className="web-search-panel__message search-results-container no-results">
           <div className="search-header">
             <h1>Xin lỗi, chúng tôi không tìm thấy kết quả cho "{value}"</h1>
           </div>
@@ -53,61 +45,48 @@ function Search(props) {
         </div>
       );
     }
+
     if (suggestionsActive) {
       return (
-        <ul className="suggestions">
-          {suggestions.map((suggestion, index) => {
-            return (
-              <li key={index}>
-                <a className="minicart-product-name cursor" href={`/productinf/${suggestion._id}`} title={suggestion.name} onClick={handleClick}>
-                  {suggestion.name}
-                </a>
-              </li>
-            );
-          })}
+        <ul className="web-search-panel__suggestions suggestions">
+          {suggestions.map((suggestion) => (
+            <li key={suggestion._id}>
+              <a className="web-search-panel__result minicart-product-name cursor" href={`/productinf/${suggestion._id}`} title={suggestion.name} onClick={handleResetSuggestions}>
+                {suggestion.name}
+              </a>
+            </li>
+          ))}
         </ul>
       );
     }
+
     return (
-      <div className="suggestions">
+      <div className="web-search-panel__trending suggestions">
         <h2>Tìm kiếm nhiều nhất</h2>
         <ul>
-          {data.listTrending.slice(0, 10).map((suggestion, index) => {
-            return (
-              <li key={index}>
-                <a
-                  className="minicart-product-name cursor"
-                  href
-                  title={suggestion.key}
-                  onClick={() => {
-                    search(suggestion.key);
-                  }}
-                >
-                  {suggestion.key}
-                </a>
-              </li>
-            );
-          })}
+          {(data?.listTrending || []).slice(0, 10).map((suggestion, index) => (
+            <li key={index}>
+              <a
+                className="web-search-panel__result minicart-product-name cursor"
+                href="/#"
+                title={suggestion.key}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleOnClick(suggestion.key);
+                }}
+              >
+                {suggestion.key}
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
     );
   };
-  const Suggestions = () => {
-    return (
-      <div className="results">
-        <div className="results-area">
-          <div id="search-suggestions">
-            <div id="primary" className="primary-content">
-              {renderPrimary()}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+
   return (
-    <>
-      <div className="form-row-search placeholder">
+    <div className="web-search-panel">
+      <div className="web-search-panel__form form-row-search placeholder">
         <div className="form-field-wrapper">
           <div className="form-field">
             <Autocomplete
@@ -117,24 +96,25 @@ function Search(props) {
               setSuggestionsActive={setSuggestionsActive}
               setValue={setValue}
               value={value}
-              classNameInput="form-input topSearch-field"
+              classNameInput="web-search-panel__input form-input topSearch-field"
               placeholderInput="Search by keyword, style etc"
               titleInput="Enter search words"
             />
           </div>
         </div>
-        {noResult ? (
-          <button className="btn btn-link" type="submit" disabled>
-            search
-          </button>
-        ) : (
-          <button className="btn btn-link" type="submit" onClick={handleOnClick}>
-            search
-          </button>
-        )}
+        <button className="web-search-panel__submit btn btn-link" type="button" onClick={() => handleOnClick()} disabled={noResult}>
+          search
+        </button>
       </div>
-      {<Suggestions />}
-    </>
+
+      <div className="web-search-panel__results results">
+        <div className="results-area">
+          <div id="search-suggestions">
+            <div className="primary-content">{renderPrimary()}</div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

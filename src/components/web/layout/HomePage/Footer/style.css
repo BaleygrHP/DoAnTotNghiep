@@ -1,0 +1,94 @@
+.web-footer {
+  margin-top: 4rem;
+  border-top: 1px solid rgba(17, 17, 17, 0.08);
+  background: linear-gradient(180deg, #faf8f3 0%, #ffffff 55%);
+}
+
+.web-footer__hero,
+.web-footer__links {
+  padding: 2.5rem 0;
+}
+
+.web-footer__hero-grid,
+.web-footer__links-grid {
+  align-items: start;
+}
+
+.web-footer__advantage,
+.web-footer__newsletter,
+.web-footer__column,
+.web-footer__promo {
+  display: grid;
+  gap: 1rem;
+}
+
+.web-footer h2,
+.web-footer .footer-title {
+  font-family: var(--web-font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.web-footer__advantage-list {
+  gap: 1rem;
+}
+
+.web-footer__advantage-item {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+  text-align: center;
+  font-weight: 600;
+}
+
+.web-footer__advantage-item i {
+  font-size: 1.45rem;
+}
+
+.web-footer__newsletter-copy,
+.web-footer__promo-link {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.web-footer__newsletter-copy p {
+  color: var(--web-color-text-muted);
+}
+
+.web-footer__links ul {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.web-footer__links a {
+  color: var(--web-color-text-muted);
+}
+
+.web-footer__links a:hover {
+  color: var(--web-color-text);
+}
+
+.web-footer__promo-link {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--web-radius-lg);
+  box-shadow: var(--web-shadow-card);
+}
+
+.web-footer__promo-link img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.web-footer__promo-badge {
+  position: absolute;
+  inset: 50% 0 auto;
+  transform: translateY(-50%);
+  color: #ffffff;
+  font-family: var(--web-font-heading);
+  font-size: clamp(2rem, 8vw, 4rem);
+  text-align: center;
+  text-shadow: 0 8px 24px rgba(17, 17, 17, 0.45);
+}

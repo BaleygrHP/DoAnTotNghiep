@@ -55,7 +55,7 @@ function AddressCombobox(props) {
             onChange={handleOnChangeCity}
             onBlur={onChange}
           >
-            <option style={{ display: 'none' }}></option>
+            <option className="u-hidden"></option>
             {cityOptions.map((tc, index) => (
               <option key={index} value={tc.value}>
                 {tc.label}
@@ -80,7 +80,7 @@ function AddressCombobox(props) {
             onChange={handleOnChangeDistrict}
             onBlur={onChange}
           >
-            <option style={{ display: 'none' }}></option>
+            <option className="u-hidden"></option>
             {districtOptions.map((tc, index) => (
               <option key={index} value={tc.value}>
                 {tc.label}
@@ -105,7 +105,7 @@ function AddressCombobox(props) {
             onChange={handleOnChangeWard}
             onBlur={onChange}
           >
-            <option style={{ display: 'none' }}></option>
+            <option className="u-hidden"></option>
             {wardOptions.map((tc, index) => (
               <option key={index} value={tc.value}>
                 {tc.label}

@@ -7,45 +7,48 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import OrderListInfo from 'components/admin/order/OrderListInfo';
+import { useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import moment from 'moment';
+import { formatPrice } from 'utils';
 import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import NavUser from 'components/web/NavUserPage/NavUser';
 import Pagination from 'components/web/pagination/index';
-import moment from 'moment';
-import { useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { formatPrice } from 'utils';
-let PageSize = 5;
+import OrderListInfo from 'components/admin/order/OrderListInfo';
+import './style.css';
+
+const PageSize = 5;
 
 const Index = function (props) {
   const { dataOrderList, label, orderComplete, orderCancel } = props;
-  console.log(dataOrderList);
   const [currentPage, setCurrentPage] = useState(1);
+
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
     const lastPageIndex = firstPageIndex + PageSize;
     return dataOrderList.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, dataOrderList]);
+
   return (
     <>
       <Helmet>
         <title>{label}</title>
       </Helmet>
-      <main id="main" className="page-content clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-user-page web-page web-page--with-header page-content clearfix">
         <div className="cart-live-region" aria-live="polite" role="status"></div>
-        <div className="container">
+        <div className="web-container">
           <NavUser />
         </div>
-        <div id="primary" className="primary-content">
-          <div className="orders-history">
+        <div className="primary-content">
+          <div className="web-order-history orders-history">
             <div className="page-header">
               <h1>
                 <span className="subtitle">Đơn hàng của tôi</span> <span className="title">Đơn {label}</span>
               </h1>
             </div>
-            {dataOrderList.length === 0 && <div className="container no-orders">Hiện tại chưa có đơn {label}</div>}
+            {dataOrderList.length === 0 && <div className="web-container no-orders">Hiện tại chưa có đơn {label}</div>}
             {dataOrderList.length > 0 && (
-              <div className="container" style={{ marginBottom: '30px' }}>
+              <div className="web-container web-user-page__table">
                 <TableContainer component={Paper}>
                   <Table aria-label="collapsible table">
                     <TableHead>
@@ -116,13 +119,7 @@ const Index = function (props) {
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <Pagination
-                  className="pagination cursor mg-t-20"
-                  currentPage={currentPage}
-                  totalCount={dataOrderList.length}
-                  pageSize={PageSize}
-                  onPageChange={(page) => setCurrentPage(page)}
-                />
+                <Pagination className="cursor mg-t-20" currentPage={currentPage} totalCount={dataOrderList.length} pageSize={PageSize} onPageChange={(page) => setCurrentPage(page)} />
               </div>
             )}
           </div>

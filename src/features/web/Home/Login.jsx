@@ -1,22 +1,22 @@
+import React, { useState } from 'react';
 import { Fab } from '@material-ui/core';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { login, loginGoogle } from 'slice/userSlice';
-import LoginForm from 'components/web/form/LoginForm';
-import Google from 'icons/Google';
-import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
 import { GoogleLogin } from 'react-google-login';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+import { Helmet } from 'react-helmet';
 import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import Loader from 'components/fullPageLoading';
+import LoginForm from 'components/web/form/LoginForm';
+import Google from 'icons/Google';
+import { login, loginGoogle } from 'slice/userSlice';
+import './style.css';
 
-import { Helmet } from 'react-helmet';
 const Login = function () {
   const history = useHistory();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const handleLoginFormSubmit = async (values) => {
@@ -37,6 +37,7 @@ const Login = function () {
       setLoading(false);
     }
   };
+
   const responseGoogleSuccess = async (response) => {
     try {
       setLoading(true);
@@ -53,6 +54,7 @@ const Login = function () {
       window.location.reload();
     }
   };
+
   const responseGoogle = (response) => {
     try {
       setLoading(true);
@@ -64,6 +66,7 @@ const Login = function () {
       setLoading(false);
     }
   };
+
   return (
     <div>
       <Helmet>
@@ -71,9 +74,9 @@ const Login = function () {
       </Helmet>
       <Loader showLoader={loading} />
       <div className="pt_storefront" id="wrapper">
-        <main id="main" className="page-content clearfix" style={{ marginTop: '128px' }}>
+        <main id="main" className="web-user-page web-page web-page--with-header page-content clearfix">
           <div id="primary" className="primary-content">
-            <div className="login-page container">
+            <div className="login-page web-container">
               <div className="page-header">
                 <h1>
                   <span className="subtitle">Tài khoản</span> <span className="title">Đăng nhập</span>
@@ -104,7 +107,7 @@ const Login = function () {
                     <h2>Thành viên mới</h2>
                     <p className="intro">Tạo một tài khoản cho riêng mình để tham gia cùng H.</p>
                     <a href="/register" className="form-row">
-                      <button type="submit" value="Create an account" name="dwfrm_login_register">
+                      <button type="button" value="Create an account" name="dwfrm_login_register">
                         Tạo tài khoản mới
                       </button>
                     </a>
@@ -118,7 +121,7 @@ const Login = function () {
                         <p className="title">Yêu thích</p>
                         <p className="text">Quản lý những tin tức mới nhất mà mình yêu thích</p>
                         <p className="title">Thông tin cá nhân</p>
-                        <p className="text">Cập nhập thông tin cá nhân</p>
+                        <p className="text">Cập nhật thông tin cá nhân</p>
                       </div>
                     </div>
                   </div>

@@ -1,0 +1,36 @@
+.web-modal {
+  width: min(100vw, 560px);
+  min-height: 100vh;
+  background: var(--web-color-surface-muted);
+}
+
+.web-modal__dialog {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 100vh;
+  border-left: 1px solid var(--web-color-border);
+  background: var(--web-color-surface);
+}
+
+.web-modal__header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1rem 0;
+}
+
+.web-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--web-color-border);
+  border-radius: 999px;
+  background: var(--web-color-surface);
+  cursor: pointer;
+}
+
+.web-modal__content {
+  padding: 1rem 1.25rem 2rem;
+  overflow-y: auto;
+}

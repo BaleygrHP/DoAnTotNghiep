@@ -1,0 +1,44 @@
+.web-user-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.web-user-page__shell,
+.web-user-page__section,
+.web-user-page__content {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.web-user-page__table {
+  margin-bottom: 30px;
+}
+
+.web-user-page__auth-card,
+.web-user-page__overview-card,
+.web-user-page__address-card {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.web-user-page__narrow {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.web-checkout-page__layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.web-checkout-page__summary {
+  margin-top: 0;
+}
+
+@media (min-width: 1002px) {
+  .web-checkout-page__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+    align-items: start;
+  }
+}

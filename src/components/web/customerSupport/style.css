@@ -1,0 +1,37 @@
+.web-support {
+  margin-top: 2rem;
+}
+
+.web-support__card {
+  display: grid;
+  gap: 1rem;
+}
+
+.web-support__title {
+  font-family: var(--web-font-heading);
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.web-support .web-container {
+  width: 100%;
+  padding: 0;
+}
+
+.web-support__body {
+  color: var(--web-color-text-muted);
+}
+
+.web-support__eyebrow {
+  margin-bottom: 0.45rem;
+}
+
+.web-support__links {
+  margin-top: 0.5rem;
+}
+
+.web-support__link {
+  padding: 0.2rem 0;
+  font-weight: 600;
+}

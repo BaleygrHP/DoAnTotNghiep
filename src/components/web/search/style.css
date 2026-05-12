@@ -1,0 +1,29 @@
+.web-search-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.web-search-panel__form {
+  margin-bottom: 0;
+}
+
+.web-search-panel__submit[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.web-search-panel__results .results-area {
+  padding: 1.25rem;
+}
+
+.web-search-panel__result {
+  display: inline-flex;
+  padding: 0.2rem 0;
+}
+
+.web-search-panel__trending h2 {
+  font-family: var(--web-font-heading);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

@@ -1,13 +1,14 @@
-import { logout } from 'slice/userSlice';
 import React from 'react';
+import { logout } from 'slice/userSlice';
 import { useDispatch } from 'react-redux';
-import { NavLink, useHistory, Link } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import { listNavUser } from 'constants/index';
+import './style.css';
 
-function NavUser(props) {
+function NavUser() {
   const dispatch = useDispatch();
-  //logout
   const history = useHistory();
+
   const handleLogout = () => {
     const action = logout();
     dispatch(action);
@@ -16,20 +17,20 @@ function NavUser(props) {
   };
 
   return (
-    <div>
-      <nav className="account-navigation">
-        <ul>
-          {listNavUser.map((data, index) => (
-            <li key={index} className={data.className}>
-              <NavLink activeClassName="active" to={data.href}>
+    <div className="web-account-nav-wrap">
+      <nav className="web-account-nav account-navigation" aria-label="Tài khoản">
+        <ul className="web-account-nav__list">
+          {listNavUser.map((data) => (
+            <li key={data._id} className={`web-account-nav__item ${data.href.startsWith('/order') ? 'is-history' : ''}`}>
+              <NavLink activeClassName="active" className="web-account-nav__link" to={data.href}>
                 {data.label}
               </NavLink>
             </li>
           ))}
-          <li>
-            <Link className="cursor" onClick={handleLogout}>
+          <li className="web-account-nav__item">
+            <button type="button" className="web-account-nav__action" onClick={handleLogout}>
               Đăng xuất
-            </Link>
+            </button>
           </li>
         </ul>
       </nav>

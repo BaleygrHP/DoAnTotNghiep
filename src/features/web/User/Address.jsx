@@ -1,48 +1,53 @@
 import React, { useState } from 'react';
-import NavUser from 'components/web/NavUserPage/NavUser';
-import CustomerSp from 'components/web/customerSupport/CustomerSp';
-import { Helmet } from 'react-helmet';
-import Loader from 'components/fullPageLoading';
-import Modal from 'components/web/modal/modal';
-import ModiffyAddress from 'components/web/form/ModifyAddress';
-import { addAddress, deleteAddress, updateAddress, updateDefaultAddress } from 'slice/userSlice';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
-import UpdateAddress from 'components/web/form/UpdateAddress';
 import { useSnackbar } from 'notistack';
+import { Helmet } from 'react-helmet';
+import Loader from 'components/fullPageLoading';
+import CustomerSp from 'components/web/customerSupport/CustomerSp';
+import ModiffyAddress from 'components/web/form/ModifyAddress';
+import Modal from 'components/web/modal/modal';
+import NavUser from 'components/web/NavUserPage/NavUser';
+import UpdateAddress from 'components/web/form/UpdateAddress';
+import { addAddress, deleteAddress, updateAddress, updateDefaultAddress } from 'slice/userSlice';
+import './style.css';
 
-const AccountOverView = function (props) {
+const AccountOverView = function () {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const addresses = useSelector((state) => state.user.current.addresses);
+  const [loading, setLoading] = useState(false);
+
   const handleAddressFormSubmit = async (values) => {
     try {
       setLoading(true);
       const action = addAddress(values);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
-      enqueueSnackbar('Cập nhập thành công', { variant: 'success' });
+      enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
     } catch (error) {
-      console.log('Failed to login:', error);
-      enqueueSnackbar('Cập nhập thất bại', { variant: 'error' });
+      console.log('Failed to add address:', error);
+      enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
   };
+
   const handleUpdateAddressFormSubmit = async (values) => {
     try {
       setLoading(true);
       const action = updateAddress(values);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
-      enqueueSnackbar('Cập nhập thành công', { variant: 'success' });
+      enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
     } catch (error) {
-      console.log('Failed to login:', error);
-      enqueueSnackbar('Cập nhập thất bại', { variant: 'error' });
+      console.log('Failed to update address:', error);
+      enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
   };
+
   const handleUpdateStatusFormSubmit = async (values) => {
     try {
       setLoading(true);
@@ -60,14 +65,15 @@ const AccountOverView = function (props) {
       const action = updateDefaultAddress(data);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
-      enqueueSnackbar('Cập nhập thành công', { variant: 'success' });
+      enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
     } catch (error) {
-      console.log('Cập nhập thất bại:', error);
-      enqueueSnackbar('Cập nhập thất bại', { variant: 'error' });
+      console.log('Cập nhật thất bại:', error);
+      enqueueSnackbar('Cập nhật thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
   };
+
   const handleDeleteFormSubmit = async (id) => {
     try {
       setLoading(true);
@@ -76,14 +82,13 @@ const AccountOverView = function (props) {
       unwrapResult(resultAction);
       enqueueSnackbar('Xoá thành công', { variant: 'success' });
     } catch (error) {
-      console.log('Failed to login:', error);
+      console.log('Failed to delete address:', error);
       enqueueSnackbar('Xoá thất bại', { variant: 'error' });
     } finally {
       setLoading(false);
     }
   };
 
-  const [loading, setLoading] = useState(false);
   return (
     <>
       <Helmet>
@@ -91,15 +96,15 @@ const AccountOverView = function (props) {
       </Helmet>
 
       <Loader showLoader={loading} />
-      <main id="main" className="page-content clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-user-page web-page web-page--with-header page-content clearfix">
         <div className="cart-live-region" aria-live="polite" role="status"></div>
-        <div className="container">
+        <div className="web-container">
           <NavUser />
         </div>
-        <div id="primary" className="primary-content">
+        <div className="primary-content">
           <div className="account-page">
             <div className="addresses-area" id="addresses">
-              <h1>
+              <h1 className="page-header">
                 <span className="title">Quản lý địa chỉ</span>
               </h1>
 
@@ -110,23 +115,22 @@ const AccountOverView = function (props) {
                     <li key={data._id} className="address-tile default">
                       <div className="mini-address-title">
                         {data.detailAddress}
-                        {data.default && <h3 className="address-default"> (Địa chỉ mặc định) </h3>}
+                        {data.default && <h3 className="address-default">(Địa chỉ mặc định)</h3>}
                       </div>
                       <div className="mini-address-name">
-                        <>
-                          {data.gender === 'Male' && 'Ông'}
-                          {data.gender === 'Female' && 'Bà'}.
-                        </>
+                        <>{data.gender === 'Male' && 'Ông'}{data.gender === 'Female' && 'Bà'}.</>
                         {data.nameCustomer}
                       </div>
                       <div className="mini-address-location">
                         <address>
                           {data.detailAddress}
-                          <br></br>
-                          {data.district.label}, {data.ward.label} <br></br>
+                          <br />
+                          {data.district.label}, {data.ward.label}
+                          <br />
                           {data.city.label}
-                          <br></br>
-                          VN Telephone: {data.phoneNumber} <br></br>
+                          <br />
+                          VN Telephone: {data.phoneNumber}
+                          <br />
                         </address>
                       </div>
 
@@ -138,11 +142,13 @@ const AccountOverView = function (props) {
                       </Modal>
                       <Modal classNameModal={'anchor'} label={'Xoá'}>
                         <p>Bạn có chắc muốn xoá địa chỉ?</p>
-                        <button onClick={() => handleDeleteFormSubmit(data._id)}>Xoá</button>
+                        <button type="button" onClick={() => handleDeleteFormSubmit(data._id)}>
+                          Xoá
+                        </button>
                       </Modal>
 
                       {!data.default && (
-                        <button className="anchor" onClick={() => handleUpdateStatusFormSubmit(data)}>
+                        <button type="button" className="anchor" onClick={() => handleUpdateStatusFormSubmit(data)}>
                           Chọn địa chỉ mặc định
                         </button>
                       )}

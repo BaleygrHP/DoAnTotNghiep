@@ -1,42 +1,44 @@
 import React from 'react';
+import './style.css';
 
-const Footer = function (props) {
+const Footer = function () {
   return (
     <>
-      {/* footer */}
-      <footer className="footer">
-        <div className="footer-slot-duo">
-          <div className="container">
-            <div className="row ">
-              <div className="col-xs-6 col-sm-6 col-lg-6 advantage-part">
+      <footer className="web-footer footer">
+        <div className="web-footer__hero footer-slot-duo">
+          <div className="web-container">
+            <div className="web-footer__hero-grid row">
+              <section className="web-footer__advantage col-xs-6 col-sm-6 col-lg-6 advantage-part">
                 <div>
                   <h2>Lợi ích của E-boutique</h2>
                 </div>
                 <div className="content-asset">
-                  <div className="row">
-                    <p className="col-xs-2 col-sm-4 col-lg-4">
+                  <div className="web-footer__advantage-list row">
+                    <p className="web-footer__advantage-item col-xs-2 col-sm-4 col-lg-4">
                       <i className="icon_freeDelivery" />
                       Miễn phí
                       <br />
                       vận chuyển
                     </p>
-                    <p className="col-xs-2 col-sm-4 col-lg-4">
+                    <p className="web-footer__advantage-item col-xs-2 col-sm-4 col-lg-4">
                       <i className="icon_collect-in-store" />
                       Mua
                       <br />
                       tại cửa hàng
                     </p>
-                    <p className="col-xs-2 col-sm-4 col-lg-4">
+                    <p className="web-footer__advantage-item col-xs-2 col-sm-4 col-lg-4">
                       <i className="icon_complimentaryGiftWrapping" />
-                      hỗ trợ <br />
+                      hỗ trợ
+                      <br />
                       gói quà
                     </p>
                   </div>
                 </div>
-              </div>
-              <div className="col-xs-6 col-sm-6 col-lg-6 newsletter-part">
+              </section>
+
+              <section className="web-footer__newsletter col-xs-6 col-sm-6 col-lg-6 newsletter-part">
                 <form action="/#Newsletter-Edit" method="POST" className="newsletter-form">
-                  <div>
+                  <div className="web-footer__newsletter-copy">
                     <h2>Đăng kí để nhận những tin tức mới nhất và kết nối đến cộng đồng H</h2>
                     <p>Trở thành người đầu tiên biết đến những bộ collections và event mới nhất.</p>
                   </div>
@@ -47,12 +49,12 @@ const Footer = function (props) {
                       </p>
                     </div>
                   </div>
-                  <div className="row">
+                  <div className="web-footer__newsletter-form row">
                     <div className="col-xs-4 col-sm-8 col-lg-8 input-container">
-                      <div className="form-row  required focus " data-requiredtext data-regexinvalidmessage >
+                      <div className="form-row required focus" data-requiredtext data-regexinvalidmessage>
                         <div className="form-field-wrapper">
                           <label className="form-label" htmlFor="dwfrm_newsletter_email">
-                          Địa chỉ E-mail *
+                            Địa chỉ E-mail *
                           </label>
                           <div className="form-field">
                             <input
@@ -77,14 +79,15 @@ const Footer = function (props) {
                     </div>
                   </div>
                 </form>
-              </div>
+              </section>
             </div>
           </div>
         </div>
-        <div className="services">
-          <div className="container">
-            <div className="row">
-              <div className="col col-md-2 col-sm-6">
+
+        <div className="web-footer__links services">
+          <div className="web-container">
+            <div className="web-footer__links-grid row">
+              <div className="web-footer__column col col-md-2 col-sm-6">
                 <span className="footer-title">Dịch vụ khách hàng</span>
                 <ul>
                   <li>
@@ -95,7 +98,7 @@ const Footer = function (props) {
                   </li>
                 </ul>
               </div>
-              <div className="col col-md-2 col-sm-6">
+              <div className="web-footer__column col col-md-2 col-sm-6">
                 <span className="footer-title">Về chúng tôi</span>
                 <ul>
                   <li>
@@ -106,7 +109,7 @@ const Footer = function (props) {
                   </li>
                 </ul>
               </div>
-              <div className="col col-md-5 col-sm-6">
+              <div className="web-footer__column col col-md-5 col-sm-6">
                 <span className="footer-title">Pháp lý</span>
                 <ul>
                   <li>
@@ -117,19 +120,16 @@ const Footer = function (props) {
                   </li>
                 </ul>
               </div>
-              <div className="col col-md-3 col-sm-3">
-                <a className="HomieBeauty promotion-impression" data-promotion-creative="footer" href="/#" target="_blank">
-                  <img alt="" src="/image/Parfum_Linterdit.jpg" title />
-                  <span style={{ position: 'absolute', color: 'white', top: '50%', left: 0, width: '100%', textAlign: 'center', transform: 'translateY(-50%)' }}>
-                    H
-                  </span>
+              <div className="web-footer__promo col col-md-3 col-sm-3">
+                <a className="web-footer__promo-link HomieBeauty promotion-impression" data-promotion-creative="footer" href="/#" target="_blank" rel="noreferrer">
+                  <img alt="" src="/image/Parfum_Linterdit.jpg" />
+                  <span className="web-footer__promo-badge">H</span>
                 </a>
               </div>
             </div>
           </div>
         </div>
       </footer>
-      {/* end footer */}
     </>
   );
 };

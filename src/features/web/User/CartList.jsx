@@ -1,28 +1,29 @@
 import React from 'react';
-import NavUser from 'components/web/NavUserPage/NavUser';
-import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import { Helmet } from 'react-helmet';
+import CustomerSp from 'components/web/customerSupport/CustomerSp';
+import NavUser from 'components/web/NavUserPage/NavUser';
+import './style.css';
 
-const Cartlist = function (props) {
+const Cartlist = function () {
   return (
     <>
       <Helmet>
         <title>Quản lý địa chỉ</title>
       </Helmet>
-      <main id="main" className="page-content clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-user-page web-page web-page--with-header page-content clearfix">
         <div className="cart-live-region" aria-live="polite" role="status"></div>
-        <div className="container">
+        <div className="web-container">
           <NavUser />
         </div>
-        <div id="primary" className="primary-content">
+        <div className="primary-content">
           <div className="account-overview">
             <div className="page-header">
               <h1>
                 <span className="subtitle">My account</span> <span className="title">Overview</span>
               </h1>
             </div>
-            <div className="container account-overview-infos">
-              <div className="col-sm-offset-3 col-xs-6 wishlist-overview grid-tile tiles-container">
+            <div className="web-container account-overview-infos">
+              <div className="web-user-page__overview-card wishlist-overview grid-tile tiles-container">
                 <div className="area-title">Mục yêu thích</div>
                 Mục yêu thích trống
                 <div className="form-row form-row-button">
@@ -36,7 +37,6 @@ const Cartlist = function (props) {
           <CustomerSp />
         </div>
       </main>
-      {/* end body */}
     </>
   );
 };

@@ -1,27 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useMemo, useState } from 'react';
 import { unwrapResult } from '@reduxjs/toolkit';
-import ProductsList from 'components/web/product/ProductsList';
-import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Loader from 'components/fullPageLoading';
-import { Helmet } from 'react-helmet';
-import Pagination from 'components/web/pagination/index';
 import { useLocation } from 'react-router';
-import { getSearchByWord } from 'slice/SearchSlice';
 import { useSnackbar } from 'notistack';
+import { Helmet } from 'react-helmet';
+import Loader from 'components/fullPageLoading';
+import Pagination from 'components/web/pagination/index';
+import ProductsList from 'components/web/product/ProductsList';
+import { getSearchByWord } from 'slice/SearchSlice';
+import './style.css';
 
-let PageSize = 8;
+const PageSize = 8;
+
 const Search = function () {
-  let location = useLocation();
+  const location = useLocation();
   const searchFor = location.search.substring(3);
   const dispatch = useDispatch();
-  // list Product
   const dataProductsList = useSelector((state) => state.search.dataSearch);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { enqueueSnackbar } = useSnackbar();
 
-  //useEffect
   useEffect(() => {
     (async () => {
       try {
@@ -43,36 +43,25 @@ const Search = function () {
     const lastPageIndex = firstPageIndex + PageSize;
     return dataProductsList.slice(firstPageIndex, lastPageIndex);
   }, [currentPage, dataProductsList]);
+
   return (
-    <div>
+    <div className="web-guest-page web-page web-page--with-header web-search-page">
       <Helmet>
         <title>Tìm Kiếm</title>
       </Helmet>
       <Loader showLoader={loading} />
-      <main id="main" className="clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-guest-page__content clearfix">
         <div className="content-slot slot-grid-header" />
-        <div id="primary" className="primary-content">
-          <div className="container">
-            <div className="category-box">
-              <div className="row-title">
-                <div className="col-md-6 col-md-4">
-                  <h1 className="title-filter">
-                    {currentTableData.length} Sản phẩm cho {searchFor}
-                  </h1>
-                </div>
-                <div className="col-md-12 col-md-4 order-md-2"></div>
+        <div className="primary-content">
+          <div className="web-container">
+            <div className="category-box web-search-page__shell">
+              <div className="web-search-page__toolbar">
+                <h1 className="web-search-page__summary">{currentTableData.length} sản phẩm cho {searchFor}</h1>
               </div>
-
-              <ul className="search-result-items tiles-container js-slv-product-grid row" data-columns>
+              <ul className="web-product-grid search-result-items tiles-container js-slv-product-grid row" data-columns>
                 <ProductsList data={currentTableData} />
               </ul>
-              <Pagination
-                className="pagination cursor"
-                currentPage={currentPage}
-                totalCount={dataProductsList.length}
-                pageSize={PageSize}
-                onPageChange={(page) => setCurrentPage(page)}
-              />
+              <Pagination className="cursor" currentPage={currentPage} totalCount={dataProductsList.length} pageSize={PageSize} onPageChange={(page) => setCurrentPage(page)} />
             </div>
           </div>
         </div>

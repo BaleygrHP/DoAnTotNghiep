@@ -1,0 +1,122 @@
+.web-home {
+  display: grid;
+  gap: 3rem;
+}
+
+.web-home__hero,
+.web-home__section {
+  width: 100%;
+}
+
+.web-home__spotlight-grid,
+.web-home__browse-grid,
+.web-home__shop-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.web-home__spotlight-card,
+.web-home__full-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--web-radius-lg);
+}
+
+.web-home__spotlight-card img,
+.web-home__full-banner img,
+.web-home__shop-card img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.web-home__spotlight-card img {
+  aspect-ratio: 3 / 4;
+}
+
+.web-home__full-banner img {
+  min-height: 420px;
+}
+
+.web-home__spotlight-content,
+.web-home__full-banner-content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0.08), rgba(17, 17, 17, 0.46));
+}
+
+.web-home__spotlight-copy,
+.web-home__full-banner-copy {
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.web-home__spotlight-title,
+.web-home__full-banner-title {
+  color: #ffffff;
+  font-family: var(--web-font-heading);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  text-transform: uppercase;
+}
+
+.web-home__browse-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.web-home__browse-card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--web-color-border);
+  border-radius: var(--web-radius-lg);
+  background: var(--web-color-surface);
+  box-shadow: var(--web-shadow-card);
+}
+
+.web-home__browse-card h2 {
+  font-family: var(--web-font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.web-home__browse-links {
+  display: grid;
+  gap: 0.65rem;
+  color: var(--web-color-text-muted);
+}
+
+.web-home__shop-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.web-home__shop-card {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.web-home__shop-card img {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--web-radius-lg);
+}
+
+.web-home__shop-title {
+  font-family: var(--web-font-heading);
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .web-home__spotlight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .web-home__browse-grid {
+    grid-template-columns: 1fr;
+  }
+}

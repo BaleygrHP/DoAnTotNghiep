@@ -1,22 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import AddToCart from 'components/web/cart/AddToCart';
-import { addToCart } from 'slice/CartSlice';
-import { THUMNAIL_URL_PRODUCTINFO } from 'constants/index';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import { formatPrice } from 'utils/common';
+import { useSnackbar } from 'notistack';
+import { Helmet } from 'react-helmet';
+import AddToCart from 'components/web/cart/AddToCart';
+import Colorproduct from 'components/web/colorProduct';
+import Detailproduct from 'components/web/detailProduct';
 import Loader from 'components/fullPageLoading';
-import { getProductDetail, getRecommand } from 'slice/ProductSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
 import Modal from 'components/web/modal/modal';
 import SizeProduct from 'components/web/sizeProduct';
-import Detailproduct from 'components/web/detailProduct';
-import Colorproduct from 'components/web/colorProduct';
-import { getListSize } from 'slice/ProductListSlice';
-import { Helmet } from 'react-helmet';
 import Suggestions from 'components/web/suggestions';
-import { useSnackbar } from 'notistack';
+import { THUMNAIL_URL_PRODUCTINFO } from 'constants/index';
+import { addToCart } from 'slice/CartSlice';
+import { getListSize } from 'slice/ProductListSlice';
+import { getProductDetail, getRecommand } from 'slice/ProductSlice';
+import { formatPrice } from 'utils/common';
+import './style.css';
+
 function ProductInfo() {
   const dispatch = useDispatch();
   const actionAddToCart = (cart) => dispatch(addToCart(cart));
@@ -34,6 +36,7 @@ function ProductInfo() {
   const [sizes, setSize] = useState('');
   const [totalProductState, setTotalProductState] = useState();
   const [up, setUp] = useState(true);
+
   useEffect(() => {
     (async () => {
       try {
@@ -52,6 +55,7 @@ function ProductInfo() {
       }
     })();
   }, [dispatch, productId]);
+
   useEffect(() => {
     (async () => {
       const values = {
@@ -84,19 +88,19 @@ function ProductInfo() {
           setUp(true);
           for (let index = 0; index < size.length; index++) {
             const element = size[index];
-            for (let index = 0; index < element.colors.length; index++) {
-              const element2 = element.colors[index];
+            for (let secondIndex = 0; secondIndex < element.colors.length; secondIndex++) {
+              const element2 = element.colors[secondIndex];
               allProduct += element2.quantity;
             }
           }
           setTotalProductState(allProduct);
         } else if (color !== 'Chọn màu' && sizes.value !== undefined) {
           setUp(false);
-          size.forEach((i) => {
-            if (sizes.value === i.nameSize) {
-              i.colors.forEach((i2) => {
-                if (color === i2.colorName) {
-                  allProduct = i2.quantity;
+          size.forEach((item) => {
+            if (sizes.value === item.nameSize) {
+              item.colors.forEach((colorItem) => {
+                if (color === colorItem.colorName) {
+                  allProduct = colorItem.quantity;
                 }
               });
             }
@@ -111,8 +115,10 @@ function ProductInfo() {
       }
     })();
   }, [size, color, sizes.value]);
+
   const thumnailUrl = product.imageMain ? product.imageMain : THUMNAIL_URL_PRODUCTINFO;
   let priceProductTotal = 0;
+
   const priceTotal = () => {
     if (product.saleId) {
       priceProductTotal = product.price - (product.price * product.saleId.percentSale) / 100;
@@ -121,18 +127,13 @@ function ProductInfo() {
     }
     return priceProductTotal;
   };
-  const handleSubmit = (data) => {
-    setColor(data);
-  };
-  const handleSubmitSize = (data) => {
-    setSize(data);
-  };
+
   const handleAddToCartSubmit = (values) => {
     try {
       setLoading(true);
       if (values) {
         const dataCart = {
-          color: color,
+          color,
           size: sizes.value,
           sizeId: sizes._id,
           product,
@@ -147,68 +148,69 @@ function ProductInfo() {
       setLoading(false);
     }
   };
+
   return (
-    <div>
+    <div className="web-guest-page web-page web-page--with-header web-product-detail-page">
       <Loader showLoader={loading} />
       <Helmet>
         <title>Thông tin sản phẩm</title>
       </Helmet>
       <div id="wrapper" className="pt_product-details">
-        <main id="main" role="main" className="full-width clearfix">
-          <div id="primary" className="primary-content">
-            <div className="container" id="product-container">
-              <div className="row">
-                <div className="product-col-image col-sm-6">
-                  <section className="product-image-container" aria-roledescription="carousel">
-                    <img className="img-productinfo" src={thumnailUrl} alt="Homie Schematics oversized T-shirt" />
-                  </section>
-                </div>
-                <div className="product-col-details col-md-4 col-md-offset-1 col-sm-6">
+        <main id="main" role="main" className="web-guest-page__content full-width clearfix">
+          <div className="primary-content">
+            <div className="web-container" id="product-container">
+              <div className="web-product-detail-page__layout">
+                <section className="web-product-detail-page__gallery product-col-image col-sm-6">
+                  <div className="product-image-container" aria-roledescription="carousel">
+                    <img className="img-productinfo" src={thumnailUrl} alt="Homie product" />
+                  </div>
+                </section>
+                <section className="web-product-detail-page__info product-col-details col-md-4 col-md-offset-1 col-sm-6">
                   <div className="product-detail">
-                    <div className="product-label">{product.saleId ? 'Sale' : product.content}</div>
+                    <div className="web-product-detail-page__label product-label">{product.saleId ? 'Sale' : product.content}</div>
                     <div>
                       <h1 className="product-name">{product.name}</h1>
                       <div className="product-price">
                         {product.saleId ? (
                           <>
                             <span className="price-standard">{formatPrice(product.price)}</span>
-                            <span className="money-saved"> ({product.saleId.percentSale}%) </span>
-                            <span className="price-sales"> {formatPrice(priceTotal())} </span>
+                            <span className="money-saved">({product.saleId.percentSale}%)</span>
+                            <span className="price-sales">{formatPrice(priceTotal())}</span>
                           </>
                         ) : (
-                          <span className="price-sales"> {formatPrice(priceTotal())} </span>
+                          <span className="price-sales">{formatPrice(priceTotal())}</span>
                         )}
                       </div>
 
                       <div className="product-description">
-                        <div className="double-form-button">
+                        <div className="web-product-detail-page__actions double-form-button">
                           <div className="left">
                             <Modal classNameModal={'form-button secondary'} label={'Thông tin món hàng'}>
                               <Detailproduct product={product} color={size} />
                             </Modal>
                           </div>
-                          <div className="right">
+                          <div className="web-product-detail-page__stock right">
                             <div className="form-button secondary addtowhishlist-btn">
-                              <a href>
-                                <span className="visible-xs-block">{totalProductState} sản phẩm</span>
-                                <span className="hidden-xs">{totalProductState} sản phẩm</span>
+                              <a href="/#">
+                                <span>{totalProductState} sản phẩm</span>
                               </a>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <Colorproduct color={size} onSubmit={handleSubmit} />
-                      <SizeProduct size={size} onSubmit={handleSubmitSize} color={color} />
+                      <Colorproduct color={size} onSubmit={(data) => setColor(data)} />
+                      <SizeProduct size={size} onSubmit={(data) => setSize(data)} color={color} />
                       <div className="product-add-to-cart">
-                        <AddToCart onSubmit={handleAddToCartSubmit} soldOut={totalProductState === 0 || up ? true : false} />
+                        <AddToCart onSubmit={handleAddToCartSubmit} soldOut={totalProductState === 0 || up} />
                       </div>
                     </div>
                   </div>
-                </div>
+                </section>
               </div>
-              <div className="product-block-images container">
+
+              <div className="web-product-detail-page__extras product-block-images container">
                 {product.images?.map((productList, index) => (
-                  <a key={index} href className="fullscreen full-mobile">
+                  <a key={index} href="/#" className="fullscreen full-mobile">
                     <img className="img-productinfo" src={productList} alt="Lỗi ảnh" />
                   </a>
                 ))}

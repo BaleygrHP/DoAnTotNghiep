@@ -1,24 +1,26 @@
-import { removeFromCart, updateCartProduct } from 'slice/CartSlice';
-import { cartItemsCountSelector } from 'slice/Selectors';
-import UserDetailCart from 'components/web/cart/UserDetailCart';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import UserDetailCart from 'components/web/cart/UserDetailCart';
+import { removeFromCart, updateCartProduct } from 'slice/CartSlice';
+import { cartItemsCountSelector } from 'slice/Selectors';
+import '../User/style.css';
 
 function UserCart() {
   const countProduct = useSelector(cartItemsCountSelector);
   const dispatch = useDispatch();
   const actionDeleteCart = (index) => dispatch(removeFromCart(index));
   const actionUpdateCartProduct = (dataCart) => dispatch(updateCartProduct(dataCart));
+
   return (
     <>
       <Helmet>
         <title>Giỏ hàng</title>
       </Helmet>
-      <main id="main" role="main" className="full-width clearfix">
+      <main id="main" role="main" className="web-user-page web-page web-page--with-header full-width clearfix">
         <div className="cart-live-region" aria-live="polite" role="status"></div>
-        <div id="primary" className="primary-content">
-          <div className="container">
+        <div className="primary-content">
+          <div className="web-container">
             {countProduct === 0 && (
               <div className="page-header">
                 <h1>
@@ -34,7 +36,7 @@ function UserCart() {
             )}
 
             {countProduct !== 0 && (
-              <div>
+              <div className="web-user-page__content">
                 <div className="page-header">
                   <h1>
                     <span className="title">Giỏ hàng</span>

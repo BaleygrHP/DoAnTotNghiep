@@ -1,12 +1,13 @@
-import { unwrapResult } from '@reduxjs/toolkit';
-import CateC from 'components/web/category/CateC';
-import { getListCategoryChild } from 'slice/CategoryChildSlice';
-import { categoryDetail } from 'slice/CategorySlice';
 import React, { useEffect, useState } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import Loader from 'components/fullPageLoading';
 import { useSnackbar } from 'notistack';
+import CateC from 'components/web/category/CateC';
+import Loader from 'components/fullPageLoading';
+import { getListCategoryChild } from 'slice/CategoryChildSlice';
+import { categoryDetail } from 'slice/CategorySlice';
+import './style.css';
 
 function CategoryChild() {
   const {
@@ -14,11 +15,11 @@ function CategoryChild() {
   } = useRouteMatch();
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-
-  // list category
   const dispatch = useDispatch();
   const dataCategoryDetail = useSelector((state) => state.categoryList.categoryDetail);
   const dataCategoryCList = useSelector((state) => state.categoryChildList.data);
+  const [data, setData] = useState(dataCategoryCList.subcategories);
+
   useEffect(() => {
     (async () => {
       try {
@@ -34,6 +35,7 @@ function CategoryChild() {
       }
     })();
   }, [dispatch, enqueueSnackbar, id]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -49,23 +51,25 @@ function CategoryChild() {
       }
     })();
   }, [dataCategoryCList.length, dataCategoryDetail.length, dispatch, enqueueSnackbar, id]);
-  const [data, setData] = useState(dataCategoryCList.subcategories);
+
   useEffect(() => {
     setData(dataCategoryCList.subcategories ? dataCategoryCList.subcategories.filter((service) => service.substatus === true) : dataCategoryCList.subcategories);
   }, [dataCategoryCList.subcategories]);
 
   return (
-    <div>
+    <div className="web-guest-page web-page web-page--with-header web-category-page">
       <Loader showLoader={loading} />
-      <main id="main" className="clearfix" style={{ marginTop: '128px' }}>
+      <main id="main" className="web-guest-page__content clearfix">
         <div className="content-slot slot-grid-header" />
-        <div id="primary" className="primary-content">
+        <div className="primary-content">
           <div className="page-header">
             <h1>
               <span className="title">{dataCategoryDetail.nameCategory}</span>
             </h1>
           </div>
-          <CateC data={data} />
+          <div className="web-container web-category-page__grid">
+            <CateC data={data || []} />
+          </div>
         </div>
       </main>
     </div>

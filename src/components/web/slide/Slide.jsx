@@ -1,27 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
 Slide.propTypes = {
   imageUrl: PropTypes.string,
   title: PropTypes.string
-
 };
 
 function Slide(props) {
   const { imageUrl, title } = props;
+
   return (
-    <div aria-roledescription="slide" className="swiper-slide">
-      <div className="image-content">
-        <div className="background">
-          <img src={imageUrl}  alt="dd b" />
+    <div aria-roledescription="slide" className="web-slide swiper-slide">
+      <div className="web-slide__frame image-content">
+        <div className="web-slide__media background">
+          <img src={imageUrl} alt="Homie slide" />
         </div>
-        <a className="content" href="/#">
-          <div className="primary">
-            <div className="primary">
-              <span style={{ color: '/#FFFFFF' }}>{title}</span>
-            </div>
+        <a className="web-slide__content content" href="/#">
+          <div className="web-slide__inner primary">
+            <div className="web-slide__title">{title}</div>
             <div className="cta-container">
-              <p className="form-button look-button">MUA NGAY</p>
+              <p className="web-slide__cta form-button look-button">Mua ngay</p>
             </div>
           </div>
         </a>

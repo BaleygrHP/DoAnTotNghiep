@@ -1,119 +1,104 @@
-import Modal from 'components/web/modal/modal';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { cartTotalSelector } from 'slice/Selectors';
+import { getAllVoucherUser, getPriceAfterUsingVoucher } from 'slice/voucherSlice';
+import Modal from 'components/web/modal/modal';
 import Voucher from 'components/web/voucher';
 import { THUMNAIL_URL_PRODUCTINFO } from 'constants/index';
-import { useDispatch, useSelector } from 'react-redux';
 import { formatPrice } from 'utils/common';
-import React, { useEffect } from 'react';
-import { getAllVoucherUser, getPriceAfterUsingVoucher } from 'slice/voucherSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
+import './style.css';
 
 function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
   const dispatch = useDispatch();
   const dataVoucherList = useSelector((state) => state.voucher.voucher);
-  //useEffect
+  const dataCart = useSelector((state) => state.cart.dataCart);
+  const priceFinal = useSelector((state) => state.voucher.data);
+  const cartTotal = useSelector(cartTotalSelector);
+
   useEffect(() => {
     (async () => {
       try {
-        // setLoading(true);
         const action = getAllVoucherUser();
         const resultAction = await dispatch(action);
         unwrapResult(resultAction);
       } catch (error) {
         console.log(error);
-      } finally {
-        // setLoading(false);
       }
     })();
   }, [dispatch]);
- 
 
-  const handleVoucherFormSubmit = (values) => {
-    try {
-      let isDisCount = (cartTotal * values.discountPercent) / 100 - values.priceOrderLimit;
-      let totalFinalPrice;
-      let DiscountPriceL;
-      if (isDisCount <= 0) {
-        totalFinalPrice = cartTotal - (cartTotal * values.discountPercent) / 100;
-        DiscountPriceL = (cartTotal * values.discountPercent) / 100;
-      } else {
-        totalFinalPrice = cartTotal - values.priceOrderLimit;
-        DiscountPriceL = values.priceOrderLimit
-      }
-      const data = {
-        Total: totalFinalPrice,
-        Percent: values.discountPercent,
-        DiscountPriceL: DiscountPriceL
-      };
-      // setLoading(true);
-      const action = getPriceAfterUsingVoucher(data);
-      const resultAction = dispatch(action);
-      unwrapResult(resultAction);
-    } catch (error) {
-      console.log('Failed to login:', error);
-    } finally {
-      // setLoading(false);
-    }
-  };
-  //cart
-  const dataCart = useSelector((state) => state.cart.dataCart);
-  const priceFinal = useSelector((state) => state.voucher.data);
-  const cartTotal = useSelector(cartTotalSelector);
   useEffect(() => {
     (async () => {
       try {
-        // setLoading(true);
         const data = {
           Total: 0,
           Percent: 0,
-          DiscountPriceL: 0
+          DiscountPriceL: 0,
         };
-        // setLoading(true);
         const action = getPriceAfterUsingVoucher(data);
         const resultAction = dispatch(action);
         unwrapResult(resultAction);
-        
       } catch (error) {
-        // console.log('Failed to fetch product', error);
-      } finally {
-        // setLoading(false);
+        // noop
       }
     })();
   }, [cartTotal, dispatch]);
 
+  const handleVoucherFormSubmit = (values) => {
+    try {
+      const isDiscount = (cartTotal * values.discountPercent) / 100 - values.priceOrderLimit;
+      let totalFinalPrice;
+      let discountPriceLimit;
+
+      if (isDiscount <= 0) {
+        totalFinalPrice = cartTotal - (cartTotal * values.discountPercent) / 100;
+        discountPriceLimit = (cartTotal * values.discountPercent) / 100;
+      } else {
+        totalFinalPrice = cartTotal - values.priceOrderLimit;
+        discountPriceLimit = values.priceOrderLimit;
+      }
+
+      const data = {
+        Total: totalFinalPrice,
+        Percent: values.discountPercent,
+        DiscountPriceL: discountPriceLimit,
+      };
+
+      const action = getPriceAfterUsingVoucher(data);
+      const resultAction = dispatch(action);
+      unwrapResult(resultAction);
+    } catch (error) {
+      console.log('Failed to apply voucher:', error);
+    }
+  };
+
   const handleSearchFormSubmit = async (values) => {
     try {
       console.log(values);
-      // setLoading(true);
-      // const action = login(values);
-      // const resultAction = await dispatch(action);
-      // unwrapResult(resultAction);
     } catch (error) {
-      console.log('Failed to login:', error);
-      // enqueueSnackbar('Mật khẩu hoặc tài khoản không chính xác', { variant: 'error' });
-      // history.push('/login');
-      // window.location.reload();
-    } finally {
-      // setLoading(false);
+      console.log('Failed to search voucher:', error);
     }
   };
 
   const onUpdateQuantity = (index, quantity) => {
-    const dataCart = {
-      index: index,
-      quantity: quantity,
+    const dataCartPayload = {
+      index,
+      quantity,
     };
+
     if (quantity > 0) {
-      actionUpdateCartProduct(dataCart);
+      actionUpdateCartProduct(dataCartPayload);
     }
   };
-  //   const thumnailUrl = dataCart.product.ProductImage ? `${STATIC_HOST}${dataCart.product.ProductImage?.url}` : THUMNAIL_URL_PRODUCTLIST;
+
   const deleteCart = (index) => {
     actionDeleteCart(index);
   };
+
   return (
-    <div className="row">
-      <div className="col-sm-6">
+    <div className="web-cart-detail row">
+      <div className="web-cart-detail__items col-sm-6">
         <h2 className="products-title">Sản phẩm</h2>
         {dataCart.map((card, index) => (
           <div key={index} className="line-item" data-product="BW60T4111N-100" data-quantity={2.0}>
@@ -123,7 +108,7 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
             <ul className="product-infos">
               <li className="item-name">
                 <h3>
-                  <a href title="Discover your future Oversized shirt with fold of fabric collar">
+                  <a href="/#" title="Discover your future Oversized shirt with fold of fabric collar">
                     {card.product.name}
                   </a>
                 </h3>
@@ -132,7 +117,7 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
                 <div className="info-table-row">
                   <span className="label">Giá:</span>
                   {card.product.saleId ? (
-                    <span className="value product-price">{formatPrice(card.product.price - (card.product.price * card.product.saleId.percentSale) / 100)} </span>
+                    <span className="value product-price">{formatPrice(card.product.price - (card.product.price * card.product.saleId.percentSale) / 100)}</span>
                   ) : (
                     <span className="value product-price">{formatPrice(card.product.price)}</span>
                   )}
@@ -142,11 +127,11 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
                   <span className="value">{card.product._id}</span>
                 </div>
                 <div className="info-table-row">
-                  <span className="label">Màu: </span>
+                  <span className="label">Màu:</span>
                   <span className="value">{card.color}</span>
                 </div>
                 <div className="info-table-row">
-                  <span className="label">Size: </span>
+                  <span className="label">Size:</span>
                   <span className="value">{card.size}</span>
                 </div>
                 <div className="info-table-row">
@@ -165,7 +150,7 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
                       name="Quantity"
                       value="+"
                       aria-label="Add One"
-                      type="submit"
+                      type="button"
                       onClick={() => {
                         onUpdateQuantity(index, card.quantity + 1);
                       }}
@@ -179,7 +164,7 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
                       name="Quantity"
                       value="-"
                       aria-label="Remove One"
-                      type="submit"
+                      type="button"
                       onClick={() => {
                         onUpdateQuantity(index, card.quantity - 1);
                       }}
@@ -192,8 +177,9 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
               <li className="item-user-actions">
                 <a
                   className="remove-product cursor"
-                  href
-                  onClick={() => {
+                  href="/#"
+                  onClick={(event) => {
+                    event.preventDefault();
                     deleteCart(index);
                   }}
                 >
@@ -205,20 +191,15 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
             </ul>
           </div>
         ))}
-        <div className="form-row-button form-row-button-cart" align="center">
+        <div className="form-row-button form-row-button-cart centered">
           <Modal classNameModal={'form-button secondary anchor'} id={'add-coupon'} label={'Nhập mã'}>
             <Voucher vouchers={dataVoucherList} onSubmit={handleVoucherFormSubmit} onSubmitSearch={handleSearchFormSubmit} />
           </Modal>
         </div>
-
-        {/* <div className="form-row-button form-row-button-cart" align="center">
-          <Modal classNameModal={'form-button secondary anchor'} id={'share-basket'} label={'Chia sẻ giỏ hàng'}>
-            Chia sẻ giỏ hàng
-          </Modal>
-        </div> */}
-        <div className="form-row-button form-row-button-cart" align="center" />
+        <div className="form-row-button form-row-button-cart centered" />
       </div>
-      <div className="col-sm-6" id="cart-summary-fixed" style={{ marginTop: '0px', marginBottom: '10px'}}>
+
+      <div className="web-cart-detail__summary col-sm-6" id="cart-summary-fixed">
         <h2 className="summary-title">Tổng kết</h2>
         <div className="cart-summary">
           <div className="cart-footer">
@@ -233,7 +214,6 @@ function UserDetailCart({ actionDeleteCart, actionUpdateCartProduct }) {
                     <th scope="row">% giảm giá:</th>
                     <td>{priceFinal.Percent ? priceFinal.Percent : 0}%</td>
                   </tr>
-
                   <tr className="order-country-zone">
                     <th scope="row">Phí vận chuyển:</th>
                     <td>$0.00</td>

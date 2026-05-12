@@ -1,0 +1,19 @@
+.web-minicart__title p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.web-minicart__summary {
+  margin-top: 1rem;
+}
+
+.web-cart-detail {
+  align-items: start;
+}
+
+.web-cart-detail__summary {
+  margin-top: 0;
+  margin-bottom: 10px;
+}

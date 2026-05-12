@@ -1,74 +1,49 @@
 import React from 'react';
 
-
-function subcategory(props) {
+function Subcategory() {
   return (
-    <div>
-      <div className="level-2">
-        <div className="container">
-          <a href className="level-2 back">
-            1
-          </a>
-          <ul className="level-2 row">
-            <li className="first-col col-xs-6 col-sm-12 col-md-3 col-md-margin-1">
-              <p>
-                <span>
-                  <a href style={{ padding: 0, borderBottom: 0, lineHeight: 1 }}>
-                    <img alt=" Antigona Soft" src="/image/Winter20_FlyOut_Women2.jpg" title />
-                  </a>
-                </span>
-              </p>
-            </li>
-            {/* sub */}
-            <li className="level-2 col-sm-3 col-md-2 " id="SHOES_W">
-              <a className="level-2 navigation-hasSubMenu" href>
-                <span>Shoes</span>
-              </a>
-              <div className="level-3">
-                <a href className="level-3 back">
-                  Shoes
-                </a>
-                <ul className="level-3">
-                  <li className="level-3 " id="SNEAKERS_W">
-                    <a className="level-3" href>
-                      Sneakers
-                    </a>
-                  </li>
-                  <li className="level-3 " id="FLATS_W">
-                    <a className="level-3" href>
-                      Flats
-                    </a>
-                  </li>
-                  <li className="level-3 " id="BOOTS_W">
-                    <a className="level-3" href>
-                      Boots &amp; Booties
-                    </a>
-                  </li>
-                  <li className="level-3 " id="SANDALS_PUMPS_W">
-                    <a className="level-3" href>
-                      High Heels
-                    </a>
-                  </li>
-                </ul>
-                <ul className="level-4">
-                  <li className="level-4">
-                    <a className="level-4" href>
-                      Antigona
-                    </a>
-                  </li>
-                  <li className="level-4">
-                    <a className="level-4" href>
-                      Bond
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
+    <div className="web-category-nav__submenu">
+      <div className="web-category-nav__submenu-card">
+        <div className="web-category-nav__promo">
+          <img alt="Antigona Soft" src="/image/Winter20_FlyOut_Women2.jpg" />
+        </div>
+        <div className="web-category-nav__submenu-columns">
+          <div className="web-category-nav__submenu-column">
+            <a className="web-category-nav__submenu-title" href="/#">
+              Shoes
+            </a>
+            <ul className="web-category-nav__submenu-links">
+              <li>
+                <a href="/#">Sneakers</a>
+              </li>
+              <li>
+                <a href="/#">Flats</a>
+              </li>
+              <li>
+                <a href="/#">Boots &amp; Booties</a>
+              </li>
+              <li>
+                <a href="/#">High Heels</a>
+              </li>
+            </ul>
+          </div>
+          <div className="web-category-nav__submenu-column">
+            <a className="web-category-nav__submenu-title" href="/#">
+              Icons
+            </a>
+            <ul className="web-category-nav__submenu-links">
+              <li>
+                <a href="/#">Antigona</a>
+              </li>
+              <li>
+                <a href="/#">Bond</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default subcategory;
+export default Subcategory;
