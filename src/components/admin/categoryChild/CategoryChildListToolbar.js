@@ -13,29 +13,34 @@ function CategoryChildListToolbar(props) {
   const [loading, setLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { data, setSubCategoryList } = props;
-  const handleChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    var filterSuggestions = data.filter(function (el) {
-      return el.namesubCategory.toLowerCase().indexOf(query) > -1;
-    });
+
+  const handleChange = (event) => {
+    const query = event.target.value.toLowerCase();
+    const filterSuggestions = data.filter((item) => item.namesubCategory.toLowerCase().indexOf(query) > -1);
     setSubCategoryList(filterSuggestions);
   };
+
   const dataCategoryList = useSelector((state) => state.categoryList.dataA);
 
-  const handleNewCategoryCFormSubmit = async (values, data) => {
+  const handleNewCategoryCFormSubmit = async (values, dataImage) => {
     try {
       setLoading(true);
       values.categoryID = parseInt(values.categoryID);
-      if (data) {
-        values.data = data;
-        const actionImage = updateImageAdmin(values);
+
+      const action = createNewCategoryCAdmin(values);
+      const resultAction = await dispatch(action);
+      const createdCategory = unwrapResult(resultAction);
+
+      if (dataImage) {
+        const actionImage = updateImageAdmin({
+          _id: createdCategory._id,
+          data: dataImage,
+        });
         const resultActionImage = await dispatch(actionImage);
         unwrapResult(resultActionImage);
       }
-      const action = createNewCategoryCAdmin(values);
-      const resultAction = await dispatch(action);
-      unwrapResult(resultAction);
-      enqueueSnackbar('Thêm Thành công', { variant: 'success' });
+
+      enqueueSnackbar('Them thanh cong', { variant: 'success' });
     } catch (error) {
       console.log(error);
       enqueueSnackbar(error.message, { variant: 'error' });
@@ -72,7 +77,7 @@ function CategoryChildListToolbar(props) {
                       </InputAdornment>
                     ),
                   }}
-                  placeholder="Tìm kiếm"
+                  placeholder="Tim kiem"
                   variant="outlined"
                 />
               </Box>
@@ -83,4 +88,5 @@ function CategoryChildListToolbar(props) {
     </>
   );
 }
+
 export default CategoryChildListToolbar;

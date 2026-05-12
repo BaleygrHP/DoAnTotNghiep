@@ -1,5 +1,7 @@
 import axiosClient from './axiosClient';
-const searchAPI = {
+import { isMockMode, mockSearchApi } from 'mocks';
+
+const realSearchAPI = {
   getSearch: (params) => {
     const url = '/search';
     return axiosClient.get(url, { params });
@@ -13,4 +15,6 @@ const searchAPI = {
     return axiosClient.get(url);
   },
 };
+const searchAPI = isMockMode ? mockSearchApi : realSearchAPI;
+
 export default searchAPI;

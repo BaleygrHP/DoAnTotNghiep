@@ -1,6 +1,7 @@
 import axiosClient from './axiosClient';
+import { isMockMode, mockCategoryCApi } from 'mocks';
 
-const categoryCApi = {
+const realCategoryCApi = {
   getAll(id, params) {
     const url = `/categories/${id}`;
     return axiosClient.get(url, { params });
@@ -10,4 +11,6 @@ const categoryCApi = {
     return axiosClient.get(url);
   },
 };
+const categoryCApi = isMockMode ? mockCategoryCApi : realCategoryCApi;
+
 export default categoryCApi;

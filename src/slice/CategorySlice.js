@@ -61,7 +61,7 @@ const ListCategorySlice = createSlice({
       state.dataA = newCategoryList;
     },
     [deleteCategoryAdmin.fulfilled]: (state, action) => {
-      const newCategoryList = state.dataA.map((service) => (service._id === action.payload._id ? action.payload : service));
+      const newCategoryList = state.dataA.filter((service) => service._id !== action.payload._id);
       state.dataA = newCategoryList;
     },
     [createNewCategoryAdmin.fulfilled]: (state, action) => {

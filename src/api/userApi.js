@@ -1,6 +1,7 @@
 import axiosClient from './axiosClient';
+import { isMockMode, mockUserApi } from 'mocks';
 
-const userApi = {
+const realUserApi = {
   register(data) {
     const url = '/users';
     return axiosClient.post(url, data);
@@ -50,5 +51,7 @@ const userApi = {
     return axiosClient.put(url, data);
   },
 };
+
+const userApi = isMockMode ? mockUserApi : realUserApi;
 
 export default userApi;

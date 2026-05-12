@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import ReactGA from 'react-ga';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Autocomplete from 'components/autoComplete';
+import { trackGa } from 'utils/analytics';
 import './style.css';
 
 function Search(props) {
@@ -16,7 +16,7 @@ function Search(props) {
   const handleOnClick = (keyword) => {
     const query = keyword || value;
     const queryString = `?q=${query}`;
-    ReactGA.ga('send', 'pageview', queryString);
+    trackGa('send', 'pageview', queryString);
     history.push(`/search${queryString}`);
   };
 

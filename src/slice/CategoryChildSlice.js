@@ -70,7 +70,7 @@ const ListCategorySlice = createSlice({
       state.dataA = newUserList;
     },
     [deleteCategoryCAdmin.fulfilled]: (state, action) => {
-      const newUserList = state.dataA.map((service) => (service._id === action.payload._id ? action.payload : service));
+      const newUserList = state.dataA.filter((service) => service._id !== action.payload._id);
       state.dataA = newUserList;
     },
     [createNewCategoryCAdmin.fulfilled]: (state, action) => {

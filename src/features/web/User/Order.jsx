@@ -13,6 +13,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import PaymentIcon from '@material-ui/icons/Payment';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { Helmet } from 'react-helmet';
 import moment from 'moment';
@@ -21,8 +22,9 @@ import OrderListInfo from 'components/admin/order/OrderListInfo';
 import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import NavUser from 'components/web/NavUserPage/NavUser';
 import Pagination from 'components/web/pagination/index';
-import { deleteOrderAdmin, getOrder, paymentVNPAY } from 'slice/OrderSlice';
+import { deleteOrderAdmin, finalizeMockVnpay, getOrder, paymentVNPAY } from 'slice/OrderSlice';
 import { formatPrice } from 'utils';
+import { isMockMode } from 'mocks';
 import './style.css';
 
 const PageSize = 5;
@@ -31,6 +33,8 @@ const Order = function () {
   const { enqueueSnackbar } = useSnackbar();
   const dataOrderList = useSelector((state) => state.order.data);
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -38,6 +42,18 @@ const Order = function () {
     (async () => {
       try {
         setLoading(true);
+
+        const searchParams = new URLSearchParams(location.search);
+        const shouldFinalizeMockVnpay = isMockMode && searchParams.get('mockVnpay') === 'success' && searchParams.get('orderId');
+
+        if (shouldFinalizeMockVnpay) {
+          const finalizeAction = finalizeMockVnpay(searchParams.get('orderId'));
+          const finalizeResultAction = await dispatch(finalizeAction);
+          unwrapResult(finalizeResultAction);
+          history.replace('/order');
+          enqueueSnackbar('Thanh toan VNPAY mock thanh cong', { variant: 'success' });
+        }
+
         const action = getOrder({
           status: 'Pending',
         });
@@ -50,7 +66,7 @@ const Order = function () {
         setLoading(false);
       }
     })();
-  }, [dispatch, enqueueSnackbar]);
+  }, [dispatch, enqueueSnackbar, history, location.search]);
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PageSize;
@@ -64,7 +80,7 @@ const Order = function () {
       const action = deleteOrderAdmin(id);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
-      enqueueSnackbar('Huỷ thành công', { variant: 'success' });
+      enqueueSnackbar('Huy thanh cong', { variant: 'success' });
     } catch (error) {
       console.log(error);
       enqueueSnackbar(error.message, { variant: 'error' });
@@ -92,7 +108,7 @@ const Order = function () {
     <>
       <Loader showLoader={loading} />
       <Helmet>
-        <title>Đang xử lý</title>
+        <title>Dang xu ly</title>
       </Helmet>
       <main id="main" className="web-user-page web-page web-page--with-header page-content clearfix">
         <div className="cart-live-region" aria-live="polite" role="status"></div>
@@ -103,10 +119,10 @@ const Order = function () {
           <div className="orders-history">
             <div className="page-header">
               <h1>
-                <span className="subtitle">Đơn hàng của tôi</span> <span className="title">Đơn đang xử lý</span>
+                <span className="subtitle">Don hang cua toi</span> <span className="title">Don dang xu ly</span>
               </h1>
             </div>
-            {dataOrderList.length === 0 && <div className="web-container no-orders">Hiện tại chưa có đơn đang xử lý</div>}
+            {dataOrderList.length === 0 && <div className="web-container no-orders">Hien tai chua co don dang xu ly</div>}
             {dataOrderList.length > 0 && (
               <div className="web-container web-user-page__table">
                 <TableContainer component={Paper}>
@@ -114,10 +130,10 @@ const Order = function () {
                     <TableHead>
                       <TableRow>
                         <TableCell>Id</TableCell>
-                        <TableCell>Địa chỉ email</TableCell>
-                        <TableCell>Tổng giá</TableCell>
-                        <TableCell>Ngày tạo đơn</TableCell>
-                        <TableCell>Trạng thái</TableCell>
+                        <TableCell>Dia chi email</TableCell>
+                        <TableCell>Tong gia</TableCell>
+                        <TableCell>Ngay tao don</TableCell>
+                        <TableCell>Trang thai</TableCell>
                         <TableCell></TableCell>
                       </TableRow>
                     </TableHead>
@@ -147,7 +163,7 @@ const Order = function () {
                               <ClearIcon />
                             </IconButton>
                             {order.paymentMethod === 'None' && (
-                              <IconButton className="mgr-10" color="primary" aria-label="delete" onClick={() => handleOnVNPAY(order._id)}>
+                              <IconButton className="mgr-10" color="primary" aria-label="pay" onClick={() => handleOnVNPAY(order._id)}>
                                 <PaymentIcon />
                               </IconButton>
                             )}

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import adminAPI from 'api/adminAPI';
 import productApi from 'api/productApi';
-import {addProductProductDetail, deleteProductDetail, updateImageProduct, updateProductDetail} from "./ProductSlice"
+import { addProductProductDetail, deleteProductDetail, updateImageProduct, updateMultipleImageProduct, updateProductDetail } from './ProductSlice';
 
 export const getListProduct = createAsyncThunk('listProduct', async (params) => {
   const response = await productApi.getAll(params);
@@ -57,8 +57,12 @@ const ListProductSlice = createSlice({
       const newCategoryList = state.dataA.map((service) => (service._id === action.payload._id ? action.payload : service));
       state.dataA = newCategoryList;
     },
-    [deleteProductDetail.fulfilled]: (state, action) => {
+    [updateMultipleImageProduct.fulfilled]: (state, action) => {
       const newCategoryList = state.dataA.map((service) => (service._id === action.payload._id ? action.payload : service));
+      state.dataA = newCategoryList;
+    },
+    [deleteProductDetail.fulfilled]: (state, action) => {
+      const newCategoryList = state.dataA.filter((service) => service._id !== action.payload._id);
       state.dataA = newCategoryList;
     },
     

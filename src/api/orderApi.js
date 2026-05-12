@@ -1,7 +1,8 @@
 import axiosClient from './axiosClient';
+import { isMockMode, mockOrderApi } from 'mocks';
 
 
-const orderApi = {
+const realOrderApi = {
   getAll(params) {
     const url = '/orders';
     return axiosClient.get(url, {params});
@@ -30,5 +31,10 @@ const orderApi = {
     const url = `/orders/payment/vnPay/${id}`;
     return axiosClient.get(url);
   },
+  finalizeMockVnpay() {
+    return Promise.reject(new Error('Mock VNPAY finalization is only available in mock mode'));
+  },
 };
+const orderApi = isMockMode ? mockOrderApi : realOrderApi;
+
 export default orderApi;

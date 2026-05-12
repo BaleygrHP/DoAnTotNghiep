@@ -27,6 +27,9 @@ function ModifyAddress(props) {
   });
 
   const handleSubmit = async (values) => {
+    values.city = selectedCity;
+    values.district = selectedDistrict;
+    values.ward = selectedWard;
     const { onSubmit } = props;
     if (onSubmit) {
       await onSubmit(values);

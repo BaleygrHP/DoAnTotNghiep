@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Fab } from '@material-ui/core';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { GoogleLogin } from 'react-google-login';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
@@ -10,6 +10,7 @@ import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import Loader from 'components/fullPageLoading';
 import LoginForm from 'components/web/form/LoginForm';
 import Google from 'icons/Google';
+import { isMockMode } from 'mocks';
 import { login, loginGoogle } from 'slice/userSlice';
 import './style.css';
 
@@ -25,12 +26,12 @@ const Login = function () {
       const action = login(values);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
-      enqueueSnackbar('Đăng nhập thành công', { variant: 'success' });
+      enqueueSnackbar('Dang nhap thanh cong', { variant: 'success' });
       history.push('/');
       window.location.reload();
     } catch (error) {
       console.log('Failed to login:', error);
-      enqueueSnackbar('Mật khẩu hoặc tài khoản không chính xác', { variant: 'error' });
+      enqueueSnackbar('Mat khau hoac tai khoan khong chinh xac', { variant: 'error' });
       history.push('/login');
       window.location.reload();
     } finally {
@@ -45,32 +46,52 @@ const Login = function () {
       const action = loginGoogle(data);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
+      enqueueSnackbar('Dang nhap Google mock thanh cong', { variant: 'success' });
       history.push('/');
     } catch (error) {
       console.log(error);
-      enqueueSnackbar('Tài khoản đã bị vô hiệu hoá', { variant: 'error' });
+      enqueueSnackbar('Tai khoan da bi vo hieu hoa', { variant: 'error' });
     } finally {
       setLoading(false);
       window.location.reload();
     }
   };
 
-  const responseGoogle = (response) => {
-    try {
-      setLoading(true);
-      console.log(response.error);
-      enqueueSnackbar(response.error, { variant: 'error' });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const responseGoogleFailure = (response) => {
+    setLoading(true);
+    enqueueSnackbar(response.error || 'Dang nhap Google that bai', { variant: 'error' });
+    setLoading(false);
+  };
+
+  const renderGoogleAction = () => {
+    if (isMockMode) {
+      return (
+        <Fab className="mgr-10" color="primary" aria-label="google-login" onClick={() => responseGoogleSuccess({ tokenId: 'mock-google-token' })}>
+          <Google />
+        </Fab>
+      );
     }
+
+    return (
+      <GoogleLogin
+        clientId="907790633444-0fnqh5mpf12k1jfes1pal08gv51vhnsh.apps.googleusercontent.com"
+        buttonText="Login"
+        render={(renderProps) => (
+          <Fab className="mgr-10" color="primary" aria-label="edit" onClick={renderProps.onClick} disabled={renderProps.disabled}>
+            <Google />
+          </Fab>
+        )}
+        onSuccess={responseGoogleSuccess}
+        onFailure={responseGoogleFailure}
+        cookiePolicy="single_host_origin"
+      />
+    );
   };
 
   return (
     <div>
       <Helmet>
-        <title>Đăng nhập</title>
+        <title>Dang nhap</title>
       </Helmet>
       <Loader showLoader={loading} />
       <div className="pt_storefront" id="wrapper">
@@ -79,49 +100,38 @@ const Login = function () {
             <div className="login-page web-container">
               <div className="page-header">
                 <h1>
-                  <span className="subtitle">Tài khoản</span> <span className="title">Đăng nhập</span>
+                  <span className="subtitle">Tai khoan</span> <span className="title">Dang nhap</span>
                 </h1>
               </div>
               <div className="row">
                 <div className="col-xs-6">
                   <div className="login-box">
-                    <h2>Thành viên của H</h2>
-                    <GoogleLogin
-                      clientId="907790633444-0fnqh5mpf12k1jfes1pal08gv51vhnsh.apps.googleusercontent.com"
-                      buttonText="Login"
-                      render={(renderProps) => (
-                        <Fab className="mgr-10" color="primary" aria-label="edit" onClick={renderProps.onClick} disabled={renderProps.disabled}>
-                          <Google />
-                        </Fab>
-                      )}
-                      onSuccess={responseGoogleSuccess}
-                      onFailure={responseGoogle}
-                      cookiePolicy={'single_host_origin'}
-                    />
-                    <p className="intro">Nếu bạn là một thành viên của H, hãy đăng nhập với thông tin của bạn.</p>
+                    <h2>Thanh vien cua H</h2>
+                    {renderGoogleAction()}
+                    <p className="intro">Neu ban la mot thanh vien cua H, hay dang nhap voi thong tin cua ban.</p>
                     <LoginForm onSubmit={handleLoginFormSubmit} />
                   </div>
                 </div>
                 <div className="col-xs-6">
                   <div className="register-box">
-                    <h2>Thành viên mới</h2>
-                    <p className="intro">Tạo một tài khoản cho riêng mình để tham gia cùng H.</p>
+                    <h2>Thanh vien moi</h2>
+                    <p className="intro">Tao mot tai khoan cho rieng minh de tham gia cung H.</p>
                     <a href="/register" className="form-row">
                       <button type="button" value="Create an account" name="dwfrm_login_register">
-                        Tạo tài khoản mới
+                        Tao tai khoan moi
                       </button>
                     </a>
                     <div className="create-account-benefits">
-                      <h3>Lợi ích</h3>
+                      <h3>Loi ich</h3>
                       <div className="content-asset">
-                        <p className="title">Giỏ hàng</p>
-                        <p className="text">Thêm vào những sản phẩm yêu thích của riêng mình</p>
-                        <p className="title">Cá nhân hoá</p>
-                        <p className="text">Sở hữu bộ sưu tập cho riêng mình</p>
-                        <p className="title">Yêu thích</p>
-                        <p className="text">Quản lý những tin tức mới nhất mà mình yêu thích</p>
-                        <p className="title">Thông tin cá nhân</p>
-                        <p className="text">Cập nhật thông tin cá nhân</p>
+                        <p className="title">Gio hang</p>
+                        <p className="text">Them vao nhung san pham yeu thich cua rieng minh</p>
+                        <p className="title">Ca nhan hoa</p>
+                        <p className="text">So huu bo suu tap cho rieng minh</p>
+                        <p className="title">Yeu thich</p>
+                        <p className="text">Quan ly nhung tin tuc moi nhat ma minh yeu thich</p>
+                        <p className="title">Thong tin ca nhan</p>
+                        <p className="text">Cap nhat thong tin ca nhan</p>
                       </div>
                     </div>
                   </div>

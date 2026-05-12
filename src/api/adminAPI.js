@@ -1,6 +1,7 @@
 import axiosClient from './axiosClient';
+import { isMockMode, mockAdminAPI } from 'mocks';
 
-const adminAPI = {
+const realAdminAPI = {
   //------------------Product------------------
   listProduct: (params) => {
     const url = '/products';
@@ -177,4 +178,6 @@ const adminAPI = {
     return axiosClient.put(url, data);
   },
 };
+const adminAPI = isMockMode ? mockAdminAPI : realAdminAPI;
+
 export default adminAPI;

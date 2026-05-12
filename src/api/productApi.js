@@ -1,6 +1,8 @@
 import axiosClient from './axiosClient';
 import axiosSubClient from './axiosSubClient';
-const productApi = {
+import { isMockMode, mockProductApi } from 'mocks';
+
+const realProductApi = {
   getAll(params) {
     const url = '/products/paging';
     return axiosClient.get(url, { params });
@@ -22,4 +24,6 @@ const productApi = {
     return axiosSubClient.post(url, values);
   },
 };
+const productApi = isMockMode ? mockProductApi : realProductApi;
+
 export default productApi;

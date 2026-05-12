@@ -1,160 +1,185 @@
-import { cartTotalSelector } from 'slice/Selectors';
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { unwrapResult } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
-import { emptyCart } from '../../../slice/CartSlice';
+import Loader from 'components/fullPageLoading';
+import { cartTotalSelector } from 'slice/Selectors';
+import { emptyCart } from 'slice/CartSlice';
 import { addOrderUser } from 'slice/OrderSlice';
-import { unwrapResult } from '@reduxjs/toolkit';
+import { isMockMode } from 'mocks';
 
-import { Helmet } from 'react-helmet';
-let total = 0;
+function loadPaypalScript() {
+  if (window.paypal) {
+    return Promise.resolve(window.paypal);
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src =
+      'https://www.paypal.com/sdk/js?client-id=ARKSwdxd5hEkUfqEz02FG3CbehuJRyqXsZhnxnyGzMpo9cpItWoujchTv9FBPUQPZ6QpekV3m2DjmxtG&currency=USD';
+    script.async = true;
+    script.onload = () => resolve(window.paypal);
+    script.onerror = () => reject(new Error('Khong the tai PayPal SDK'));
+    document.body.appendChild(script);
+  });
+}
+
+function buildMockPaypalPayload({ cartTotal, currentUser, dataCart, userId }) {
+  const defaultAddress = currentUser.addresses?.find((address) => address.default) || currentUser.addresses?.[0];
+
+  const items = dataCart.map((cartItem) => {
+    const salePercent = cartItem.product.saleId?.percentSale || 0;
+    const salePrice = cartItem.product.price - (cartItem.product.price * salePercent) / 100;
+    const usdPrice = salePrice / 20000;
+
+    return {
+      productId: cartItem.product._id,
+      quantity: cartItem.quantity,
+      totalPrice: Number((cartItem.quantity * usdPrice).toFixed(2)),
+      colorName: cartItem.color,
+      saleId: cartItem.product.saleId?._id || null,
+      sizeId: cartItem.sizeId,
+      sizeName: cartItem.size,
+    };
+  });
+
+  return {
+    addressrecevie: {
+      name: `${currentUser.lastname || ''} ${currentUser.fistname || ''}`.trim() || currentUser.email,
+      phonenumber: defaultAddress?.phoneNumber || currentUser.phonenumber || '0900000000',
+      address: defaultAddress
+        ? `${defaultAddress.detailAddress}, ${defaultAddress.district.label}, ${defaultAddress.city.label}`
+        : 'Mock PayPal address',
+    },
+    priceDiscount: 0,
+    userId,
+    items,
+    totalPrice: cartTotal,
+    paymentId: `MOCK-PAYPAL-${Date.now()}`,
+    isPaypal: true,
+  };
+}
+
 export default function Paypal() {
   const cartTotal = useSelector(cartTotalSelector);
   const dataCart = useSelector((state) => state.cart.dataCart);
-  const userId = useSelector((state) => state.user.current._id);
+  const currentUser = useSelector((state) => state.user.current);
+  const userId = currentUser._id;
   const paypal = useRef();
   const dispatch = useDispatch();
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
+
+  const handleOrderSuccess = useCallback(async (payload) => {
+    try {
+      setLoading(true);
+      const action = addOrderUser(payload);
+      const resultAction = await dispatch(action);
+      unwrapResult(resultAction);
+      dispatch(emptyCart());
+      history.push('/order');
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, history]);
+
+  const handleMockPaypalCheckout = async () => {
+    const payload = buildMockPaypalPayload({
+      cartTotal,
+      currentUser,
+      dataCart,
+      userId,
+    });
+    await handleOrderSuccess(payload);
+  };
+
   useEffect(() => {
-    window.paypal
-      .Buttons({
-        style: {
-          layout: 'vertical',
-          color: 'silver',
-          shape: 'rect',
-          label: 'paypal',
-        },
-        createOrder: (data, actions, err) => {
-          let item = {
-            unit_amount: {
-              currency_code: 'USD',
-              value: 0.01,
+    if (isMockMode || !paypal.current) {
+      return undefined;
+    }
+
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const paypalSdk = await loadPaypalScript();
+        if (!isMounted || !paypalSdk) {
+          return;
+        }
+
+        paypalSdk
+          .Buttons({
+            style: {
+              layout: 'vertical',
+              color: 'silver',
+              shape: 'rect',
+              label: 'paypal',
             },
-            quantity: 2,
-            name: 'Item 1',
-          };
-          let items1 = [];
-          let a = 0;
-          let b = 0;
-          for (var i = 0; i < dataCart.length; i++) {
-            if (dataCart[i].product.saleId) {
-              a = ((dataCart[i].product.price - (dataCart[i].product.price * dataCart[i].product.saleId.percentSale) / 100) / 20000).toFixed(2);
-              b = dataCart[i].quantity * ((dataCart[i].product.price - (dataCart[i].product.price * dataCart[i].product.saleId.percentSale) / 100) / 20000).toFixed(2);
-            } else {
-              a = (dataCart[i].product.price / 20000).toFixed(2);
-              b = dataCart[i].quantity * (dataCart[i].product.price / 20000).toFixed(2);
-            }
-            total += b;
-            item.unit_amount.value = a;
-            item.totalPrice = b;
-            item.quantity = dataCart[i].quantity;
-            item.name = dataCart[i].product.name;
-            items1.unshift(item);
-            item = {
-              unit_amount: {
-                currency_code: 'USD',
-                value: 0.01,
-              },
-              quantity: 2,
-              name: 'Item 1',
-            };
-          }
-          return actions.order.create({
-            intent: 'CAPTURE',
-            purchase_units: [
-              {
-                description: 'Stuff',
-                amount: {
-                  value: total.toFixed(2),
-                  currency_code: 'USD',
-                  breakdown: {
-                    item_total: {
+            createOrder: (data, actions) =>
+              actions.order.create({
+                intent: 'CAPTURE',
+                purchase_units: [
+                  {
+                    description: 'HomieReal order',
+                    amount: {
+                      value: (cartTotal / 20000).toFixed(2),
                       currency_code: 'USD',
-                      value: total.toFixed(2),
                     },
                   },
+                ],
+              }),
+            onApprove: async (data, actions) => {
+              const order = await actions.order.capture();
+              await handleOrderSuccess({
+                ...buildMockPaypalPayload({
+                  cartTotal,
+                  currentUser,
+                  dataCart,
+                  userId,
+                }),
+                paymentId: order.id,
+                addressrecevie: {
+                  name: order.payer.name?.given_name || currentUser.email,
+                  phonenumber: currentUser.phonenumber || '0900000000',
+                  address: order.payer.address?.country_code || 'VN',
                 },
-                items: items1,
-              },
-            ],
-          });
-        },
+              });
+            },
+            onError: (error) => {
+              console.log(error);
+            },
+          })
+          .render(paypal.current);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
 
-        onApprove: async (data, actions) => {
-          try {
-            const order = await actions.order.capture();
-            order.addressrecevie = {
-              name: order.payer.email_address,
-              phonenumber: '0929333111',
-              address: order.payer.address.country_code,
-            };
-            let item = {
-              productId: 1,
-              quantity: 2,
-              totalPrice: 200,
-              colorName: 'Black',
-              saleId: 26,
-              sizeId: 1,
-              sizeName: 'S',
-            };
-            let items = [];
-            let b = 0;
-            for (let i = 0; i < dataCart.length; i++) {
-              item.productId = dataCart[i].product._id;
-              item.colorName = dataCart[i].color;
-              item.sizeName = dataCart[i].size;
-              item.quantity = dataCart[i].quantity;
-              item.sizeId = dataCart[i].sizeId;
-              if (dataCart[i].product.saleId) {
-                b = dataCart[i].quantity * ((dataCart[i].product.price - (dataCart[i].product.price * dataCart[i].product.saleId.percentSale) / 100) / 20000);
-                item.saleId = dataCart[i].product.saleId._id;
-              } else {
-                b = dataCart[i].quantity * (dataCart[i].product.price / 20000);
-                item.saleId = null;
-              }
-              item.totalPrice = b.toFixed(2);
-              items.unshift(item);
-              item = {
-                productId: 1,
-                quantity: 2,
-                totalPrice: 200,
-                colorName: 'Black',
-                saleId: 26,
-                sizeName: 'S',
-              };
-            }
-            order.priceDiscount = 0;
-            order.userId = userId;
-            order.items = items;
-            order.totalPrice = cartTotal;
-            order.paymentId = order.id;
-            order.isPaypal = true;
-            const action = addOrderUser(order);
-            const resultAction = await dispatch(action);
-            unwrapResult(resultAction);
-
-            const actionEmptyCart = emptyCart();
-            dispatch(actionEmptyCart);
-            history.push('/order');
-            window.location.reload();
-          } catch (error) {
-            console.log(error);
-          }
-        },
-        onError: (err) => {
-          console.log(err);
-        },
-      })
-      .render(paypal.current);
-  }, [cartTotal, dataCart, dispatch, history, userId]);
+    return () => {
+      isMounted = false;
+    };
+  }, [cartTotal, currentUser, dataCart, handleOrderSuccess, userId]);
 
   return (
     <>
+      <Loader showLoader={loading} />
       <Helmet>
-        <title>Thanh toán paypal</title>
+        <title>Thanh toan paypal</title>
       </Helmet>
       <main id="main">
-        <div className="centered paypal-button-container" ref={paypal}></div>
+        {isMockMode ? (
+          <div className="centered paypal-button-container">
+            <button type="button" className="form-button checkout-start" onClick={handleMockPaypalCheckout} disabled={dataCart.length === 0}>
+              Xac nhan thanh toan PayPal mock
+            </button>
+          </div>
+        ) : (
+          <div className="centered paypal-button-container" ref={paypal}></div>
+        )}
       </main>
     </>
   );

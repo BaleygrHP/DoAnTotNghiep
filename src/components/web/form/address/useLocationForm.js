@@ -1,53 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { PATHS } from 'constants/paths';
-
-const FETCH_TYPES = {
-  CITIES: 'FETCH_CITIES',
-  DISTRICTS: 'FETCH_DISTRICTS',
-  WARDS: 'FETCH_WARDS',
-};
-
-async function fetchLocationOptions(fetchType, locationId) {
-  let url;
-  switch (fetchType) {
-    case FETCH_TYPES.CITIES: {
-      url = PATHS.CITIES;
-      break;
-    }
-    case FETCH_TYPES.DISTRICTS: {
-      url = `${PATHS.DISTRICTS}/${locationId}.json`;
-      break;
-    }
-    case FETCH_TYPES.WARDS: {
-      url = `${PATHS.WARDS}/${locationId}.json`;
-      break;
-    }
-    default: {
-      return [];
-    }
-  }
-  const locations = (await axios.get(url)).data['data'];
-  return locations.map(({ id, name }) => ({ value: id, label: name }));
-}
-
-async function fetchInitialData() {
-  const { cityId, districtId, wardId } = (await axios.get(PATHS.LOCATION)).data;
-  const [cities, districts, wards] = await Promise.all([
-    fetchLocationOptions(FETCH_TYPES.CITIES),
-    fetchLocationOptions(FETCH_TYPES.DISTRICTS, cityId),
-    fetchLocationOptions(FETCH_TYPES.WARDS, districtId),
-  ]);
-  return {
-    cityOptions: cities,
-    districtOptions: districts,
-    wardOptions: wards,
-    selectedCity: cities.find((c) => c.value === cityId),
-    selectedDistrict: districts.find((d) => d.value === districtId),
-    selectedWard: wards.find((w) => w.value === wardId),
-  };
-}
+import locationApi from 'api/locationApi';
 
 function useLocationForm(shouldFetchInitialLocation) {
   const [state, setState] = useState({
@@ -64,59 +17,95 @@ function useLocationForm(shouldFetchInitialLocation) {
   useEffect(() => {
     (async function () {
       if (shouldFetchInitialLocation) {
-        const initialData = await fetchInitialData();
-        setState(initialData);
-      } else {
-        const options = await fetchLocationOptions(FETCH_TYPES.CITIES);
-        setState({ ...state, cityOptions: options });
+        const { cityId, districtId, wardId } = await locationApi.getInitialLocation();
+        const [cities, districts, wards] = await Promise.all([
+          locationApi.getCities(),
+          locationApi.getDistricts(cityId),
+          locationApi.getWards(districtId),
+        ]);
+
+        setState({
+          cityOptions: cities,
+          districtOptions: districts,
+          wardOptions: wards,
+          selectedCity: cities.find((city) => city.value === cityId) || null,
+          selectedDistrict: districts.find((district) => district.value === districtId) || null,
+          selectedWard: wards.find((ward) => ward.value === wardId) || null,
+        });
+
+        return;
       }
+
+      const cityOptions = await locationApi.getCities();
+      setState((prevState) => ({
+        ...prevState,
+        cityOptions,
+      }));
     })();
   }, []);
 
   useEffect(() => {
     (async function () {
-      if (!selectedCity) return;
-      const options = await fetchLocationOptions(FETCH_TYPES.DISTRICTS, selectedCity.value);
-      setState({ ...state, districtOptions: options });
+      if (!selectedCity?.value) {
+        return;
+      }
+
+      const districtOptions = await locationApi.getDistricts(selectedCity.value);
+      setState((prevState) => ({
+        ...prevState,
+        districtOptions,
+      }));
     })();
   }, [selectedCity]);
-  
+
   useEffect(() => {
     (async function () {
-      if (!selectedDistrict) return;
-      const options = await fetchLocationOptions(FETCH_TYPES.WARDS, selectedDistrict.value);
-      setState({ ...state, wardOptions: options });
+      if (!selectedDistrict?.value) {
+        return;
+      }
+
+      const wardOptions = await locationApi.getWards(selectedDistrict.value);
+      setState((prevState) => ({
+        ...prevState,
+        wardOptions,
+      }));
     })();
   }, [selectedDistrict]);
 
   function onCitySelect(option) {
-    if (option !== selectedCity) {
-      setState({
-        ...state,
-        districtOptions: [],
-        wardOptions: [],
-        selectedCity: option,
-        selectedDistrict: null,
-        selectedWard: null,
-      });
-    }
+    setState((prevState) => ({
+      ...prevState,
+      selectedCity: option,
+      selectedDistrict: null,
+      selectedWard: null,
+      districtOptions: [],
+      wardOptions: [],
+    }));
   }
+
   function onDistrictSelect(option) {
-    if (option !== selectedDistrict) {
-      setState({
-        ...state,
-        wardOptions: [],
-        selectedDistrict: option,
-        selectedWard: null,
-      });
-    }
+    setState((prevState) => ({
+      ...prevState,
+      selectedDistrict: option,
+      selectedWard: null,
+      wardOptions: [],
+    }));
   }
 
   function onWardSelect(option) {
-    setState({ ...state, selectedWard: option });
+    setState((prevState) => ({
+      ...prevState,
+      selectedWard: option,
+    }));
   }
 
-  return { state, onCitySelect, onDistrictSelect, onWardSelect };
+  return {
+    state,
+    setLocationState: setState,
+    onCitySelect,
+    onDistrictSelect,
+    onWardSelect,
+  };
 }
 
 export default useLocationForm;

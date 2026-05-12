@@ -1,58 +1,38 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
-// import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import InputCombobox from './inputCommon/inputCombobox';
 import Input from './inputCommon/inputText';
 import useLocationForm from './address/useLocationForm';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import axios from 'axios';
-import { PATHS } from 'constants/paths';
+import locationApi from 'api/locationApi';
 
 const FETCH_TYPES = {
-  CITIES: 'FETCH_CITIES',
   DISTRICTS: 'FETCH_DISTRICTS',
   WARDS: 'FETCH_WARDS',
 };
+
 async function fetchLocationOptions(fetchType, locationId) {
-  let url;
   switch (fetchType) {
-    case FETCH_TYPES.CITIES: {
-      url = PATHS.CITIES;
-      break;
-    }
-    case FETCH_TYPES.DISTRICTS: {
-      url = `${PATHS.DISTRICTS}/${locationId}.json`;
-      break;
-    }
-    case FETCH_TYPES.WARDS: {
-      url = `${PATHS.WARDS}/${locationId}.json`;
-      break;
-    }
-    default: {
+    case FETCH_TYPES.DISTRICTS:
+      return locationApi.getDistricts(locationId);
+    case FETCH_TYPES.WARDS:
+      return locationApi.getWards(locationId);
+    default:
       return [];
-    }
   }
-  const locations = (await axios.get(url)).data['data'];
-  return locations.map(({ id, name }) => ({ value: id, label: name }));
 }
+
 function UpdateAddress(props) {
   const { data } = props;
-  const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm(false);
-  let { cityOptions, districtOptions, wardOptions, selectedCity, selectedDistrict, selectedWard } = state;
-  const [state2, setState2] = useState({
-    cityOptions: [],
-    districtOptions: [],
-    wardOptions: [],
-    selectedCity: null,
-    selectedDistrict: null,
-    selectedWard: null,
-  });
+  const { state, setLocationState, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm(false);
+  const { cityOptions, districtOptions, wardOptions, selectedCity, selectedDistrict, selectedWard } = state;
+
   const schema = yup.object().shape({
-    nameCustomer: yup.string().required('Tên không hợp lệ'),
-    detailAddress: yup.string().required('Địa chỉ không hợp lệ'),
-    phoneNumber: yup.string().required('Số điện thoại không hợp lệ'),
+    nameCustomer: yup.string().required('Ten khong hop le'),
+    detailAddress: yup.string().required('Dia chi khong hop le'),
+    phoneNumber: yup.string().required('So dien thoai khong hop le'),
   });
 
   const addressform = useForm({
@@ -71,79 +51,98 @@ function UpdateAddress(props) {
   });
 
   useEffect(() => {
-    state.selectedCity = data.city;
-    state.selectedDistrict = data.district;
-    state.selectedWard = data.ward;
-  }, []);
-
-  useEffect(() => {
     (async function () {
-      if (!state.selectedCity) return;
-      const options = await fetchLocationOptions(FETCH_TYPES.DISTRICTS, state.selectedCity.value);
-      setState2({ ...state, districtOptions: options });
+      const [districts, wards] = await Promise.all([
+        fetchLocationOptions(FETCH_TYPES.DISTRICTS, data.city.value),
+        fetchLocationOptions(FETCH_TYPES.WARDS, data.district.value),
+      ]);
+
+      setLocationState((prevState) => ({
+        ...prevState,
+        selectedCity: data.city,
+        selectedDistrict: data.district,
+        selectedWard: data.ward,
+        districtOptions: districts,
+        wardOptions: wards,
+      }));
+
+      addressform.reset({
+        _id: data._id,
+        city: data.city,
+        district: data.district,
+        ward: data.ward,
+        nameCustomer: data.nameCustomer,
+        detailAddress: data.detailAddress,
+        phoneNumber: data.phoneNumber,
+        gender: data.gender,
+        default: data.default,
+      });
     })();
-  }, [state.selectedCity]);
-  state.districtOptions = state2.districtOptions;
+  }, [data]);
 
   const handleSubmit = async (values) => {
-    values.city = state.selectedCity;
-    values.district = state.selectedDistrict;
-    values.ward = state.selectedWard;
+    values.city = selectedCity;
+    values.district = selectedDistrict;
+    values.ward = selectedWard;
     values._id = data._id;
     values.isdefault = data.default;
+
     const { onSubmit } = props;
     if (onSubmit) {
       await onSubmit(values);
     }
   };
-  const handleOnChangeCity = (e) => {
-    let index = e.target.selectedIndex;
-    let label = e.target[index].text;
-    let value = e.target.value;
-    onCitySelect({ value: value, label: label });
-  };
-  const handleOnChangeDistrict = (e) => {
-    let index = e.target.selectedIndex;
-    let label = e.target[index].text;
-    let value = e.target.value;
 
-    onDistrictSelect({ value: value, label: label });
+  const handleOnChangeCity = (event) => {
+    const index = event.target.selectedIndex;
+    const label = event.target[index].text;
+    const value = event.target.value;
+    onCitySelect({ value, label });
   };
-  const handleOnChangeWard = (e) => {
-    let index = e.target.selectedIndex;
-    let label = e.target[index].text;
-    let value = e.target.value;
 
-    onWardSelect({ value: value, label: label });
+  const handleOnChangeDistrict = (event) => {
+    const index = event.target.selectedIndex;
+    const label = event.target[index].text;
+    const value = event.target.value;
+    onDistrictSelect({ value, label });
   };
+
+  const handleOnChangeWard = (event) => {
+    const index = event.target.selectedIndex;
+    const label = event.target[index].text;
+    const value = event.target.value;
+    onWardSelect({ value, label });
+  };
+
   const categoryOptions = [
-    { label: 'Ông', value: 'Male' },
-    { label: 'Bà', value: 'Female' },
+    { label: 'Ong', value: 'Male' },
+    { label: 'Ba', value: 'Female' },
   ];
+
   return (
     <form className="form-horizontal" onSubmit={addressform.handleSubmit(handleSubmit)}>
       <fieldset>
-        <InputCombobox name="gender" form={addressform} label="Ông/Bà" dataForm={categoryOptions}/>
-        <Input name="nameCustomer" form={addressform} placeholder="Họ và Tên *" />
-        <Input name="phoneNumber" form={addressform} placeholder="Số điện thoại *" />
-        <div className={`form-row  required form-row-select`}>
+        <InputCombobox name="gender" form={addressform} label="Ong/Ba" dataForm={categoryOptions} />
+        <Input name="nameCustomer" form={addressform} placeholder="Ho va Ten *" />
+        <Input name="phoneNumber" form={addressform} placeholder="So dien thoai *" />
+        <div className="form-row required form-row-select">
           <div className="form-field-wrapper">
-            <label className="form-label">Tỉnh/Thành phố</label>
+            <label className="form-label">Tinh/Thanh pho</label>
             <div className="form-field">
               <div className="form-select-wrapper">
                 <select
-                  className="form-select  form-field required"
+                  className="form-select form-field required"
                   name="cityId"
                   key={`cityId_${selectedCity?.value}`}
                   onChange={handleOnChangeCity}
-                  placeholder="Tỉnh/Thành"
-                  value={selectedCity?.value}
+                  placeholder="Tinh/Thanh"
+                  value={selectedCity?.value || ''}
                   defaultValue={selectedCity}
                 >
-                  <option className="hidden">Tỉnh/Thành</option>
-                  {cityOptions.map((tc, index) => (
-                    <option className="form-selectOption" key={index} value={tc.value}>
-                      {tc.label}
+                  <option className="hidden">Tinh/Thanh</option>
+                  {cityOptions.map((city, index) => (
+                    <option className="form-selectOption" key={index} value={city.value}>
+                      {city.label}
                     </option>
                   ))}
                 </select>
@@ -152,25 +151,25 @@ function UpdateAddress(props) {
           </div>
         </div>
 
-        <div className={`form-row  required form-row-select`}>
+        <div className="form-row required form-row-select">
           <div className="form-field-wrapper">
-            <label className="form-label">Quận/Huyện</label>
+            <label className="form-label">Quan/Huyen</label>
             <div className="form-field">
               <div className="form-select-wrapper">
                 <select
-                  className="form-select  form-field required"
+                  className="form-select form-field required"
                   name="districtId"
                   key={`districtId${selectedDistrict?.value}`}
                   onChange={handleOnChangeDistrict}
                   disabled={districtOptions.length === 0}
-                  placeholder="Quận"
-                  value={selectedDistrict?.value}
+                  placeholder="Quan"
+                  value={selectedDistrict?.value || ''}
                   defaultValue={selectedDistrict}
                 >
-                  <option className="hidden">Quận/Huyện</option>
-                  {districtOptions.map((tc, index) => (
-                    <option className="form-selectOption" key={index} value={tc.value}>
-                      {tc.label}
+                  <option className="hidden">Quan/Huyen</option>
+                  {districtOptions.map((district, index) => (
+                    <option className="form-selectOption" key={index} value={district.value}>
+                      {district.label}
                     </option>
                   ))}
                 </select>
@@ -179,25 +178,25 @@ function UpdateAddress(props) {
           </div>
         </div>
 
-        <div className={`form-row  required form-row-select`}>
+        <div className="form-row required form-row-select">
           <div className="form-field-wrapper">
-            <label className="form-label">Phường/Xã</label>
+            <label className="form-label">Phuong/Xa</label>
             <div className="form-field">
               <div className="form-select-wrapper">
                 <select
-                  className="form-select  form-field required"
+                  className="form-select form-field required"
                   name="wardId"
                   key={`wardId${selectedWard?.value}`}
                   onChange={handleOnChangeWard}
-                  placeholder="Huyện"
+                  placeholder="Huyen"
                   disabled={wardOptions.length === 0}
-                  value={selectedWard?.value}
+                  value={selectedWard?.value || ''}
                   defaultValue={selectedWard}
                 >
-                  <option className="hidden">Phường/Xã</option>
-                  {wardOptions.map((tc, index) => (
-                    <option className="form-selectOption" key={index} value={tc.value}>
-                      {tc.label}
+                  <option className="hidden">Phuong/Xa</option>
+                  {wardOptions.map((ward, index) => (
+                    <option className="form-selectOption" key={index} value={ward.value}>
+                      {ward.label}
                     </option>
                   ))}
                 </select>
@@ -205,12 +204,12 @@ function UpdateAddress(props) {
             </div>
           </div>
         </div>
-        <Input name="detailAddress" form={addressform} placeholder="Địa chỉ *" />
+        <Input name="detailAddress" form={addressform} placeholder="Dia chi *" />
 
-        <p className="mandatory-fields">Tất cả các trường có dấu * là bắt buộc</p>
+        <p className="mandatory-fields">Tat ca cac truong co dau * la bat buoc</p>
         <div className="form-row form-row-button">
           <button className="apply-button btn btn-outline-primary btn-full " type="submit" name="dwfrm_profile_address_edit" value="Apply">
-            Lưu
+            Luu
           </button>
         </div>
       </fieldset>

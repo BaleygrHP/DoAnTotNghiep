@@ -9,7 +9,6 @@ import NotFoundA from 'features/admin/NotFound';
 import theme2 from './theme';
 import pageAdmin from 'features/admin/page';
 import { useSelector } from 'react-redux';
-import ReactGA from 'react-ga';
 //User
 import DefaultLayout from 'components/web/layout/HomePage/DefaultLayout';
 import pageGuest from 'features/web/index';
@@ -18,9 +17,9 @@ import NotFound from 'features/web/NotFound';
 import React, { Suspense } from 'react';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { initializeAnalytics, trackPageview } from 'utils/analytics';
 
-const TRACKING_ID = "UA-230695609-1"; 
-ReactGA.initialize(TRACKING_ID);
+initializeAnalytics();
 //admin
 const DashboardLayoutRoot = styled('div')(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -60,7 +59,7 @@ function App() {
 
 
   useEffect(() => {
-    ReactGA.pageview(window.location.pathname + window.location.search);
+    trackPageview(window.location.pathname + window.location.search);
   }, []);
   // function
   const showPageGuest = (page) => {

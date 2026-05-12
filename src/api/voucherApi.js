@@ -1,5 +1,7 @@
 import axiosClient from './axiosClient';
-const voucherApi = {
+import { isMockMode, mockVoucherApi } from 'mocks';
+
+const realVoucherApi = {
   getAll() {
     const url = 
     '/coupons';
@@ -23,4 +25,6 @@ const voucherApi = {
     return axiosClient.get(url);
   },
 };
+const voucherApi = isMockMode ? mockVoucherApi : realVoucherApi;
+
 export default voucherApi;

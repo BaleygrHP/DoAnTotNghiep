@@ -3,6 +3,7 @@ import userApi from 'api/userApi';
 import adminAPI from 'api/adminAPI';
 
 import StorageKeys from 'constants/storage-keys';
+import { clearMockSession } from 'mocks';
 
 export const register = createAsyncThunk('user/register', async (payload) => {
   const data = await userApi.register(payload);
@@ -101,6 +102,7 @@ const userSlice = createSlice({
       // clear local storage
       localStorage.removeItem(StorageKeys.USER);
       localStorage.removeItem(StorageKeys.TOKEN);
+      clearMockSession();
 
       state.current = {};
     },

@@ -1,5 +1,7 @@
 import axiosClient from "./axiosClient";
-const staticAPI = {
+import { isMockMode, mockStaticApi } from 'mocks';
+
+const realStaticAPI = {
   getProduct: (params) => {
     const url = '/statistics/products/time';
     return axiosClient.get(url, { params });
@@ -21,4 +23,6 @@ const staticAPI = {
     return axiosClient.get(url);
   },
 };
+const staticAPI = isMockMode ? mockStaticApi : realStaticAPI;
+
 export default staticAPI;

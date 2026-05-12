@@ -47,6 +47,10 @@ export const paymentVNPAY = createAsyncThunk('paymentVNPAY', async (id) => {
   const response = await orderApi.getPaymentVNPAY(id);
   return response;
 });
+export const finalizeMockVnpay = createAsyncThunk('finalizeMockVnpay', async (id) => {
+  const response = await orderApi.finalizeMockVnpay(id);
+  return response;
+});
 const ListOrderSlice = createSlice({
   name: 'order',
   initialState: {
@@ -76,10 +80,20 @@ const ListOrderSlice = createSlice({
     [addOrderCompleteAdmin.fulfilled]: (state, action) => {
       const newOrderList = state.data.filter(service => service._id !== action.payload.orderComplete.orderId._id);
       state.data = newOrderList;
+      state.dataComplete.unshift(action.payload.orderComplete);
     },
     [deleteOrderAdmin.fulfilled]: (state, action) => {
       const newOrderList = state.data.filter(service => service._id !== action.payload._id);
       state.data = newOrderList;
+    },
+    [statusOrderComplete.fulfilled]: (state, action) => {
+      state.dataComplete = state.dataComplete.map((service) => (service._id === action.payload._id ? action.payload : service));
+    },
+    [statusOrderFail.fulfilled]: (state, action) => {
+      state.dataComplete = state.dataComplete.map((service) => (service._id === action.payload._id ? action.payload : service));
+    },
+    [finalizeMockVnpay.fulfilled]: (state, action) => {
+      state.data = state.data.map((service) => (service._id === action.payload._id ? action.payload : service));
     },
   },
 });
