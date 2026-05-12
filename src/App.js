@@ -1,5 +1,5 @@
 //Admin
-import { StyledEngineProvider, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import { styled } from '@material-ui/styles';
 import { useEffect, useState } from 'react';
 import DashboardNavbar from 'components/admin/DashboardNavbar';
@@ -94,28 +94,26 @@ function App() {
           </DefaultLayout>
         )}
         {user.role === 'admin' && (
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme2}>
-              <GlobalStyles />
-              <DashboardLayoutRoot>
-                <DashboardNavbar onMobileNavOpen={() => setMobileNavOpen(true)} />
-                <DashboardSidebar onMobileClose={() => setMobileNavOpen(false)} openMobile={isMobileNavOpen} />
-                <DashboardLayoutWrapper>
-                  <DashboardLayoutContainer>
-                    <DashboardLayoutContent>
-                      <Router>
-                        <Switch>
-                          {showPageAdmin(pageAdmin)}
-                          <Route path="/*" component={NotFoundA} exact />
-                          <Redirect to="/" from="/" />
-                        </Switch>
-                      </Router>
-                    </DashboardLayoutContent>
-                  </DashboardLayoutContainer>
-                </DashboardLayoutWrapper>
-              </DashboardLayoutRoot>
-            </ThemeProvider>
-          </StyledEngineProvider>
+          <ThemeProvider theme={theme2}>
+            <GlobalStyles />
+            <DashboardLayoutRoot>
+              <DashboardNavbar onMobileNavOpen={() => setMobileNavOpen(true)} />
+              <DashboardSidebar onMobileClose={() => setMobileNavOpen(false)} openMobile={isMobileNavOpen} />
+              <DashboardLayoutWrapper>
+                <DashboardLayoutContainer>
+                  <DashboardLayoutContent>
+                    <Router>
+                      <Switch>
+                        {showPageAdmin(pageAdmin)}
+                        <Route path="/*" component={NotFoundA} exact />
+                        <Redirect to="/" from="/" />
+                      </Switch>
+                    </Router>
+                  </DashboardLayoutContent>
+                </DashboardLayoutContainer>
+              </DashboardLayoutWrapper>
+            </DashboardLayoutRoot>
+          </ThemeProvider>
         )}
       </Suspense>
     </Router>
