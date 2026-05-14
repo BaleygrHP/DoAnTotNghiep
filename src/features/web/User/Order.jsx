@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { unwrapResult } from '@reduxjs/toolkit';
 import OrderListInfo from 'components/admin/order/OrderListInfo';
-import { deleteOrderAdmin, getOrder, paymentVNPAY } from 'slice/OrderSlice';
+import { cancelOrderUser, getOrder, paymentVNPAY } from 'slice/OrderSlice';
 import CustomerSp from 'components/web/customerSupport/CustomerSp';
 import NavUser from 'components/web/NavUserPage/NavUser';
 import moment from 'moment';
@@ -58,7 +58,7 @@ const Order = function () {
   const handleOnCancel = async (id) => {
     try {
       setLoading(true);
-      const action = deleteOrderAdmin(id);
+      const action = cancelOrderUser(id);
       const resultAction = await dispatch(action);
       unwrapResult(resultAction);
       enqueueSnackbar('Huỷ thành công', { variant: 'success' });

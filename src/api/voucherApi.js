@@ -1,4 +1,6 @@
 import axiosClient from './axiosClient';
+import { withWebFallback } from './webFallback';
+import { webMockApi } from 'mocks/webMockData';
 const voucherApi = {
   getAll() {
     const url = 
@@ -20,7 +22,7 @@ const voucherApi = {
   getAllUser() {
     const url = 
     '/coupons/checkvalid/all';
-    return axiosClient.get(url);
+    return withWebFallback(() => axiosClient.get(url), () => webMockApi.getVouchersForUser(), 'voucherApi.getAllUser');
   },
 };
 export default voucherApi;

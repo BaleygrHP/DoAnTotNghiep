@@ -37,6 +37,10 @@ export const getOrder = createAsyncThunk('getOrder', async (params) => {
   const response = await orderApi.getAll(params);
   return response;
 });
+export const cancelOrderUser = createAsyncThunk('cancelOrderUser', async (id) => {
+  const response = await orderApi.delete(id);
+  return response;
+});
 export const getOrderCompleteUser = createAsyncThunk('getOrderCompleteUser', async (params) => {
   const response = await orderApi.getOrderByEmail(params);
   return response;
@@ -79,6 +83,10 @@ const ListOrderSlice = createSlice({
     },
     [deleteOrderAdmin.fulfilled]: (state, action) => {
       const newOrderList = state.data.filter(service => service._id !== action.payload._id);
+      state.data = newOrderList;
+    },
+    [cancelOrderUser.fulfilled]: (state, action) => {
+      const newOrderList = state.data.filter((service) => service._id !== action.payload._id);
       state.data = newOrderList;
     },
   },

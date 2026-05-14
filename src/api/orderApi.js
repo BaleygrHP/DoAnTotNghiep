@@ -1,10 +1,12 @@
 import axiosClient from './axiosClient';
+import { withWebFallback } from './webFallback';
+import { webMockApi } from 'mocks/webMockData';
 
 
 const orderApi = {
   getAll(params) {
     const url = '/orders';
-    return axiosClient.get(url, {params});
+    return withWebFallback(() => axiosClient.get(url, { params }), () => webMockApi.getOrders(params), 'orderApi.getAll');
   },
   get(id) {
     const url = `/orders/${id}`;
@@ -12,11 +14,11 @@ const orderApi = {
   },
   add(data) {
     const url = '/orders';
-    return axiosClient.post(url, data);
+    return withWebFallback(() => axiosClient.post(url, data), () => webMockApi.addOrder(data), 'orderApi.add');
   },
   delete(id) {
     const url = `/orders/${id}`;
-    return axiosClient.delete(url);
+    return withWebFallback(() => axiosClient.delete(url), () => webMockApi.cancelOrder(id), 'orderApi.delete');
   },
   update(data) {
     const url = `/orders/${data.id}`;
@@ -24,11 +26,11 @@ const orderApi = {
   },
   getOrderByEmail(params) {
     const url = `/ordercompletes/search/getByEmail`;
-    return axiosClient.get(url, {params});
+    return withWebFallback(() => axiosClient.get(url, { params }), () => webMockApi.getCompletedOrders(params), 'orderApi.getOrderByEmail');
   },
   getPaymentVNPAY(id) {
     const url = `/orders/payment/vnPay/${id}`;
-    return axiosClient.get(url);
+    return withWebFallback(() => axiosClient.get(url), () => webMockApi.payWithVNPay(id), 'orderApi.getPaymentVNPAY');
   },
 };
 export default orderApi;

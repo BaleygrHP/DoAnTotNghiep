@@ -4,7 +4,7 @@ import productApi from 'api/productApi';
 import {addProductProductDetail, deleteProductDetail, updateImageProduct, updateProductDetail} from "./ProductSlice"
 
 export const getListProduct = createAsyncThunk('listProduct', async (params) => {
-  const response = await productApi.getAll(params);
+  const response = await productApi.getAllWeb(params);
   return response;
 });
 export const getListSize = createAsyncThunk('getListSize', async (id) => {
